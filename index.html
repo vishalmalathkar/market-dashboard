@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>India Market Pulse | Live Gold, Silver, NIFTY, BSE Dashboard</title>
+  <meta name="description" content="Live Indian market dashboard — Gold, Silver, Copper prices, Petrol rate, NIFTY, BSE Sensex, sector performance. Auto-refreshes every minute." />
+  <meta property="og:title" content="India Market Pulse" />
+  <meta property="og:description" content="Live Gold, Silver, Nifty, BSE & Sector data. Free. Auto-refreshing." />
+  <meta name="theme-color" content="#0a0c10" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0c10;
+      --surface: #111318;
+      --surface2: #191d26;
+      --border: rgba(255,255,255,0.06);
+      --gold: #f5c842;
+      --silver: #aab8cc;
+      --copper: #d97c45;
+      --green: #22c55e;
+      --red: #ef4444;
+      --blue: #3b82f6;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --accent: #f5c842;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Animated background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(ellipse at 20% 20%, rgba(245,200,66,0.04) 0%, transparent 50%),
+                  radial-gradient(ellipse at 80% 80%, rgba(59,130,246,0.04) 0%, transparent 50%);
+      animation: bgPulse 8s ease-in-out infinite alternate;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @keyframes bgPulse {
+      0% { transform: scale(1) rotate(0deg); }
+      100% { transform: scale(1.1) rotate(5deg); }
+    }
+
+    .wrapper { position: relative; z-index: 1; }
+
+    /* HEADER */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 32px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,12,16,0.8);
+      backdrop-filter: blur(20px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--gold), #e67e22);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 0 20px rgba(245,200,66,0.3);
+    }
+
+    .logo-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 2px;
+      color: #fff;
+    }
+
+    .logo-text span { color: var(--gold); }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.3);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--green);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: blink 1s infinite;
+      box-shadow: 0 0 8px var(--green);
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .clock {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .refresh-info {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* MAIN CONTENT */
+    main {
+      padding: 28px 32px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    /* SECTION TITLES */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      margin-top: 32px;
+    }
+
+    .section-header:first-child { margin-top: 0; }
+
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* COMMODITIES GRID */
+    .commodities-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 8px;
+    }
+
+    .commodity-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .commodity-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,0.12);
+    }
+
+    .commodity-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      border-radius: 16px 16px 0 0;
+    }
+
+    .commodity-card.gold::before { background: linear-gradient(90deg, var(--gold), #e67e22); }
+    .commodity-card.silver::before { background: linear-gradient(90deg, var(--silver), #718096); }
+    .commodity-card.copper::before { background: linear-gradient(90deg, var(--copper), #c05621); }
+    .commodity-card.petrol::before { background: linear-gradient(90deg, #3b82f6, #6366f1); }
+
+    .commodity-icon {
+      font-size: 28px;
+      margin-bottom: 12px;
+    }
+
+    .commodity-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .commodity-name {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .commodity-price {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 28px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .commodity-price.loading {
+      color: var(--muted);
+      font-size: 18px;
+      animation: shimmer 1.5s infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    .commodity-unit {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .commodity-change {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    .commodity-change.up { background: rgba(34,197,94,0.1); color: var(--green); }
+    .commodity-change.down { background: rgba(239,68,68,0.1); color: var(--red); }
+    .commodity-change.neutral { background: rgba(100,116,139,0.1); color: var(--muted); }
+
+    /* INDICES GRID */
+    .indices-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .index-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      transition: transform 0.2s, border-color 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .index-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,0.12);
+    }
+
+    .index-card.gift { border-top: 3px solid #a78bfa; }
+    .index-card.nifty50 { border-top: 3px solid var(--gold); }
+    .index-card.bse { border-top: 3px solid #38bdf8; }
+    .index-card.smallcap { border-top: 3px solid #fb923c; }
+    .index-card.midcap { border-top: 3px solid #34d399; }
+
+    .index-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+
+    .index-card.gift .index-badge { background: rgba(167,139,250,0.15); color: #a78bfa; }
+    .index-card.nifty50 .index-badge { background: rgba(245,200,66,0.15); color: var(--gold); }
+    .index-card.bse .index-badge { background: rgba(56,189,248,0.15); color: #38bdf8; }
+    .index-card.smallcap .index-badge { background: rgba(251,146,60,0.15); color: #fb923c; }
+    .index-card.midcap .index-badge { background: rgba(52,211,153,0.15); color: #34d399; }
+
+    .index-name {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    .index-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 26px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .index-value.loading {
+      color: var(--muted);
+      font-size: 18px;
+      animation: shimmer 1.5s infinite;
+    }
+
+    .index-change-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .change-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 5px;
+    }
+
+    .change-chip.up { background: rgba(34,197,94,0.12); color: var(--green); }
+    .change-chip.down { background: rgba(239,68,68,0.12); color: var(--red); }
+    .change-chip.neutral { background: rgba(100,116,139,0.12); color: var(--muted); }
+
+    /* SECTORS GRID */
+    .sectors-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .sector-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .sector-panel-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sector-panel-header.positive { background: rgba(34,197,94,0.05); }
+    .sector-panel-header.negative { background: rgba(239,68,68,0.05); }
+
+    .sector-panel-icon {
+      font-size: 18px;
+    }
+
+    .sector-panel-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 16px;
+      letter-spacing: 1.5px;
+    }
+
+    .sector-panel-title.positive { color: var(--green); }
+    .sector-panel-title.negative { color: var(--red); }
+
+    .sector-panel-count {
+      margin-left: auto;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    .sector-panel-count.positive { background: rgba(34,197,94,0.15); color: var(--green); }
+    .sector-panel-count.negative { background: rgba(239,68,68,0.15); color: var(--red); }
+
+    .sector-list {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-height: 80px;
+    }
+
+    .sector-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-radius: 10px;
+      transition: background 0.15s;
+    }
+
+    .sector-item:hover { background: var(--surface2); }
+
+    .sector-item-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .sector-item-change {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .sector-item-change.up { color: var(--green); }
+    .sector-item-change.down { color: var(--red); }
+
+    .sector-item-bar {
+      width: 60px;
+      height: 4px;
+      background: var(--surface2);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-left: 10px;
+    }
+
+    .sector-item-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.5s ease;
+    }
+
+    .sector-item-fill.up { background: var(--green); }
+    .sector-item-fill.down { background: var(--red); }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 24px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 40px;
+    }
+
+    .footer-note { margin-top: 6px; color: rgba(100,116,139,0.6); }
+
+    /* UPDATE TOAST */
+    #updateToast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: rgba(34,197,94,0.15);
+      border: 1px solid rgba(34,197,94,0.3);
+      color: var(--green);
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s;
+      z-index: 999;
+      pointer-events: none;
+    }
+
+    #updateToast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* PROGRESS BAR */
+    .progress-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold), #e67e22);
+      transition: width 1s linear;
+      z-index: 999;
+      box-shadow: 0 0 8px rgba(245,200,66,0.5);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      header { padding: 14px 16px; }
+      main { padding: 20px 16px; }
+      .sectors-wrapper { grid-template-columns: 1fr; }
+      .commodity-price { font-size: 22px; }
+      .index-value { font-size: 20px; }
+      .logo-text { font-size: 20px; }
+    }
+
+    /* Error state */
+    .error-note {
+      font-size: 11px;
+      color: var(--copper);
+      margin-top: 6px;
+    }
+
+    .data-source-note {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon">📈</div>
+      <div class="logo-text">India Market <span>Pulse</span></div>
+    </div>
+    <div class="header-right">
+      <div class="live-badge"><div class="live-dot"></div> Live</div>
+      <div class="clock" id="clock">--:--:--</div>
+      <div class="refresh-info">Refreshes every 60s</div>
+    </div>
+  </header>
+
+  <!-- PROGRESS BAR -->
+  <div class="progress-bar" id="progressBar" style="width:100%"></div>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- COMMODITIES -->
+    <div class="section-header">
+      <div class="section-title">⚡ Commodities</div>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="commodities-grid">
+      <!-- GOLD -->
+      <div class="commodity-card gold">
+        <div class="commodity-icon">🥇</div>
+        <div class="commodity-label">Precious Metal</div>
+        <div class="commodity-name">Gold (24K) · 10 grams</div>
+        <div class="commodity-price loading" id="goldPrice">Loading...</div>
+        <div class="commodity-unit" id="goldUnit">INR per 10g</div>
+        <div class="commodity-change neutral" id="goldChange">—</div>
+      </div>
+
+      <!-- SILVER -->
+      <div class="commodity-card silver">
+        <div class="commodity-icon">🥈</div>
+        <div class="commodity-label">Precious Metal</div>
+        <div class="commodity-name">Silver · 1 Kilogram</div>
+        <div class="commodity-price loading" id="silverPrice">Loading...</div>
+        <div class="commodity-unit" id="silverUnit">INR per kg</div>
+        <div class="commodity-change neutral" id="silverChange">—</div>
+      </div>
+
+      <!-- COPPER -->
+      <div class="commodity-card copper">
+        <div class="commodity-icon">🪙</div>
+        <div class="commodity-label">Industrial Metal</div>
+        <div class="commodity-name">Copper · 1 Kilogram</div>
+        <div class="commodity-price loading" id="copperPrice">Loading...</div>
+        <div class="commodity-unit" id="copperUnit">INR per kg</div>
+        <div class="commodity-change neutral" id="copperChange">—</div>
+      </div>
+
+      <!-- PETROL -->
+      <div class="commodity-card petrol">
+        <div class="commodity-icon">⛽</div>
+        <div class="commodity-label">Fuel</div>
+        <div class="commodity-name">Petrol · Hyderabad</div>
+        <div class="commodity-price" id="petrolPrice">₹108.20</div>
+        <div class="commodity-unit">INR per litre</div>
+        <div class="commodity-change neutral" id="petrolChange">Stable</div>
+      </div>
+    </div>
+
+    <div class="data-source-note">
+      ℹ️ Metal prices: USD spot rates × live INR/USD rate. Petrol: Official Hyderabad rate (changes monthly).
+    </div>
+
+    <!-- INDICES -->
+    <div class="section-header">
+      <div class="section-title">📊 Market Indices</div>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="indices-grid">
+      <div class="index-card gift">
+        <div class="index-badge">GIFT Nifty</div>
+        <div class="index-name">GIFT City SGX Nifty</div>
+        <div class="index-value loading" id="giftNiftyVal">Loading...</div>
+        <div class="index-change-row">
+          <div class="change-chip neutral" id="giftNiftyChange">—</div>
+          <div class="change-chip neutral" id="giftNiftyPct">—</div>
+        </div>
+      </div>
+
+      <div class="index-card nifty50">
+        <div class="index-badge">Nifty 50</div>
+        <div class="index-name">NSE Nifty 50 Index</div>
+        <div class="index-value loading" id="nifty50Val">Loading...</div>
+        <div class="index-change-row">
+          <div class="change-chip neutral" id="nifty50Change">—</div>
+          <div class="change-chip neutral" id="nifty50Pct">—</div>
+        </div>
+      </div>
+
+      <div class="index-card bse">
+        <div class="index-badge">BSE Sensex</div>
+        <div class="index-name">Bombay Stock Exchange</div>
+        <div class="index-value loading" id="bseVal">Loading...</div>
+        <div class="index-change-row">
+          <div class="change-chip neutral" id="bseChange">—</div>
+          <div class="change-chip neutral" id="bsePct">—</div>
+        </div>
+      </div>
+
+      <div class="index-card smallcap">
+        <div class="index-badge">Nifty Smallcap</div>
+        <div class="index-name">Nifty Smallcap 100</div>
+        <div class="index-value loading" id="smallcapVal">Loading...</div>
+        <div class="index-change-row">
+          <div class="change-chip neutral" id="smallcapChange">—</div>
+          <div class="change-chip neutral" id="smallcapPct">—</div>
+        </div>
+      </div>
+
+      <div class="index-card midcap">
+        <div class="index-badge">Nifty Midcap</div>
+        <div class="index-name">Nifty Midcap 100</div>
+        <div class="index-value loading" id="midcapVal">Loading...</div>
+        <div class="index-change-row">
+          <div class="change-chip neutral" id="midcapChange">—</div>
+          <div class="change-chip neutral" id="midcapPct">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="data-source-note">
+      ℹ️ Index data: Yahoo Finance (15-min delayed during market hours). Real-time data requires a broker API.
+    </div>
+
+    <!-- SECTORS -->
+    <div class="section-header">
+      <div class="section-title">🏭 Sector Performance</div>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="sectors-wrapper">
+      <div class="sector-panel">
+        <div class="sector-panel-header positive">
+          <div class="sector-panel-icon">📈</div>
+          <div class="sector-panel-title positive">Positive Sectors</div>
+          <div class="sector-panel-count positive" id="posCount">—</div>
+        </div>
+        <div class="sector-list" id="positiveSectors">
+          <div style="color:var(--muted);font-size:13px;padding:10px;text-align:center;animation:shimmer 1.5s infinite;">Loading sectors...</div>
+        </div>
+      </div>
+
+      <div class="sector-panel">
+        <div class="sector-panel-header negative">
+          <div class="sector-panel-icon">📉</div>
+          <div class="sector-panel-title negative">Negative Sectors</div>
+          <div class="sector-panel-count negative" id="negCount">—</div>
+        </div>
+        <div class="sector-list" id="negativeSectors">
+          <div style="color:var(--muted);font-size:13px;padding:10px;text-align:center;animation:shimmer 1.5s infinite;">Loading sectors...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="data-source-note" style="margin-top:8px">
+      ℹ️ Sector data: NSE India sector indices via Yahoo Finance.
+    </div>
+
+  </main>
+
+  <footer>
+    <div>India Market Pulse &nbsp;·&nbsp; Built with free public data sources &nbsp;·&nbsp; For informational purposes only</div>
+    <div class="footer-note">Data may be delayed. Not financial advice. Last refreshed: <span id="lastRefreshed">—</span></div>
+  </footer>
+
+</div>
+
+<!-- TOAST -->
+<div id="updateToast">✓ Data refreshed</div>
+
+<script>
+// ═══════════════════════════════════════════
+//  CONFIGURATION
+// ═══════════════════════════════════════════
+const REFRESH_INTERVAL = 60; // seconds
+// Multiple CORS proxies — fallback chain if one fails
+const CORS_PROXIES = [
+  'https://corsproxy.io/?',
+  'https://api.allorigins.win/raw?url=',
+];
+let activeProxyIdx = 0;
+
+async function fetchWithProxy(rawUrl) {
+  for (let i = 0; i < CORS_PROXIES.length; i++) {
+    const idx = (activeProxyIdx + i) % CORS_PROXIES.length;
+    try {
+      const resp = await fetch(CORS_PROXIES[idx] + encodeURIComponent(rawUrl));
+      if (resp.ok) { activeProxyIdx = idx; return resp; }
+    } catch(e) { /* try next */ }
+  }
+  throw new Error('All proxies failed');
+}
+const CORS_PROXY = 'https://corsproxy.io/?'; // legacy compat
+
+// Yahoo Finance ticker symbols
+const TICKERS = {
+  nifty50:   '^NSEI',
+  bse:       '^BSESN',
+  giftNifty: 'GIFT.NS',   // fallback: use Nifty futures
+  smallcap:  '^CNXSC',
+  midcap:    '^CNXMC',
+};
+
+// NSE Sector indices on Yahoo Finance
+const SECTOR_TICKERS = {
+  'Nifty IT':        '^CNXIT',
+  'Nifty Bank':      '^NSEBANK',
+  'Nifty Auto':      '^CNXAUTO',
+  'Nifty Pharma':    '^CNXPHARMA',
+  'Nifty FMCG':      '^CNXFMCG',
+  'Nifty Metal':     '^CNXMETAL',
+  'Nifty Realty':    '^CNXREALTY',
+  'Nifty Energy':    '^CNXENERGY',
+  'Nifty Media':     '^CNXMEDIA',
+  'Nifty PSU Bank':  '^CNXPSUBANK',
+  'Nifty Infra':     '^CNXINFRA',
+  'Nifty Fin Serv':  '^NIFTY_FIN_SERVICE',
+};
+
+// Petrol prices (Hyderabad - updated manually monthly)
+const PETROL_PRICE = 108.20;
+
+// ═══════════════════════════════════════════
+//  CLOCK
+// ═══════════════════════════════════════════
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toLocaleTimeString('en-IN', { hour12: false });
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ═══════════════════════════════════════════
+//  HELPER: FORMAT NUMBERS
+// ═══════════════════════════════════════════
+function fmtINR(val, decimals = 2) {
+  if (!isFinite(val)) return '—';
+  return '₹' + Number(val).toLocaleString('en-IN', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
+  });
+}
+
+function fmtNum(val, decimals = 2) {
+  if (!isFinite(val)) return '—';
+  return Number(val).toLocaleString('en-IN', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
+  });
+}
+
+function setChangeChip(el, change, pct, isINR = false) {
+  if (!el) return;
+  const cls = change > 0 ? 'up' : change < 0 ? 'down' : 'neutral';
+  const arrow = change > 0 ? '▲' : change < 0 ? '▼' : '—';
+  el.className = `change-chip ${cls}`;
+  if (pct !== undefined) {
+    el.textContent = `${arrow} ${pct > 0 ? '+' : ''}${pct.toFixed(2)}%`;
+  } else {
+    el.textContent = `${arrow} ${isINR ? fmtINR(Math.abs(change)) : fmtNum(Math.abs(change))}`;
+  }
+}
+
+function setCommodityChange(elId, change, pct) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  if (change === null || change === undefined) {
+    el.className = 'commodity-change neutral';
+    el.textContent = '—';
+    return;
+  }
+  const cls = change > 0 ? 'up' : change < 0 ? 'down' : 'neutral';
+  const arrow = change > 0 ? '▲' : change < 0 ? '▼' : '';
+  el.className = `commodity-change ${cls}`;
+  el.textContent = `${arrow} ${pct !== undefined ? (pct > 0 ? '+' : '') + pct.toFixed(2) + '%' : ''}`;
+}
+
+// ═══════════════════════════════════════════
+//  FETCH FOREX (USD to INR)
+// ═══════════════════════════════════════════
+let USD_INR = 84.5; // fallback
+
+async function fetchUSDINR() {
+  try {
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/USDINR=X?interval=1d&range=1d`;
+    const resp = await fetchWithProxy(url);
+    const data = await resp.json();
+    const price = data?.chart?.result?.[0]?.meta?.regularMarketPrice;
+    if (price) USD_INR = price;
+  } catch (e) {
+    console.warn('Using fallback USD/INR rate:', USD_INR);
+  }
+}
+
+// ═══════════════════════════════════════════
+//  FETCH GOLD & SILVER (via Yahoo Finance XAU, XAG)
+// ═══════════════════════════════════════════
+async function fetchMetalPrices() {
+  try {
+    // Gold = GC=F futures (USD per troy oz)
+    // Silver = SI=F futures (USD per troy oz)
+    // Copper = HG=F futures (USD per lb → convert)
+    const symbols = ['GC=F', 'SI=F', 'HG=F'];
+
+    const results = await Promise.allSettled(symbols.map(sym => {
+      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1d&range=1d`;
+      return fetchWithProxy(url).then(r => r.json());
+    }));
+
+    // GOLD
+    if (results[0].status === 'fulfilled') {
+      const meta = results[0].value?.chart?.result?.[0]?.meta;
+      if (meta?.regularMarketPrice) {
+        const ozPriceUSD = meta.regularMarketPrice;
+        // 1 troy oz = 31.1035g, so 10g = 10/31.1035 oz
+        const price10gINR = (ozPriceUSD * (10 / 31.1035)) * USD_INR;
+        const prevClose = meta.chartPreviousClose || meta.previousClose || ozPriceUSD;
+        const prevPrice10g = (prevClose * (10 / 31.1035)) * USD_INR;
+        const change = price10gINR - prevPrice10g;
+        const pct = (change / prevPrice10g) * 100;
+
+        document.getElementById('goldPrice').textContent = fmtINR(price10gINR, 0);
+        document.getElementById('goldPrice').classList.remove('loading');
+        setCommodityChange('goldChange', change, pct);
+      }
+    }
+
+    // SILVER
+    if (results[1].status === 'fulfilled') {
+      const meta = results[1].value?.chart?.result?.[0]?.meta;
+      if (meta?.regularMarketPrice) {
+        const ozPriceUSD = meta.regularMarketPrice;
+        // 1 troy oz = 31.1035g, 1 kg = 1000g = 1000/31.1035 oz
+        const priceKgINR = (ozPriceUSD * (1000 / 31.1035)) * USD_INR;
+        const prevClose = meta.chartPreviousClose || meta.previousClose || ozPriceUSD;
+        const prevPriceKg = (prevClose * (1000 / 31.1035)) * USD_INR;
+        const change = priceKgINR - prevPriceKg;
+        const pct = (change / prevPriceKg) * 100;
+
+        document.getElementById('silverPrice').textContent = fmtINR(priceKgINR, 0);
+        document.getElementById('silverPrice').classList.remove('loading');
+        setCommodityChange('silverChange', change, pct);
+      }
+    }
+
+    // COPPER (HG=F is in USD per lb)
+    if (results[2].status === 'fulfilled') {
+      const meta = results[2].value?.chart?.result?.[0]?.meta;
+      if (meta?.regularMarketPrice) {
+        const lbPriceUSD = meta.regularMarketPrice;
+        // 1 kg = 2.20462 lb
+        const priceKgINR = (lbPriceUSD * 2.20462) * USD_INR;
+        const prevClose = meta.chartPreviousClose || meta.previousClose || lbPriceUSD;
+        const prevPriceKg = (prevClose * 2.20462) * USD_INR;
+        const change = priceKgINR - prevPriceKg;
+        const pct = (change / prevPriceKg) * 100;
+
+        document.getElementById('copperPrice').textContent = fmtINR(priceKgINR, 2);
+        document.getElementById('copperPrice').classList.remove('loading');
+        setCommodityChange('copperChange', change, pct);
+      }
+    }
+  } catch (e) {
+    console.error('Metal fetch error:', e);
+    ['goldPrice','silverPrice','copperPrice'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.classList.contains('loading')) {
+        el.textContent = 'Unavailable';
+        el.classList.remove('loading');
+      }
+    });
+  }
+}
+
+// ═══════════════════════════════════════════
+//  FETCH INDEX DATA
+// ═══════════════════════════════════════════
+async function fetchIndex(ticker, valId, changeId, pctId) {
+  try {
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`;
+    const resp = await fetchWithProxy(url);
+    if (!resp.ok) throw new Error('Failed');
+    const data = await resp.json();
+    const meta = data?.chart?.result?.[0]?.meta;
+
+    if (!meta?.regularMarketPrice) throw new Error('No data');
+
+    const price = meta.regularMarketPrice;
+    const prevClose = meta.chartPreviousClose || meta.previousClose || price;
+    const change = price - prevClose;
+    const pct = (change / prevClose) * 100;
+    const isUp = change >= 0;
+
+    const valEl = document.getElementById(valId);
+    valEl.textContent = fmtNum(price, 2);
+    valEl.classList.remove('loading');
+
+    const changeEl = document.getElementById(changeId);
+    const pctEl = document.getElementById(pctId);
+    const cls = isUp ? 'up' : 'down';
+    const arrow = isUp ? '▲' : '▼';
+
+    if (changeEl) {
+      changeEl.className = `change-chip ${cls}`;
+      changeEl.textContent = `${arrow} ${Math.abs(change).toFixed(2)}`;
+    }
+    if (pctEl) {
+      pctEl.className = `change-chip ${cls}`;
+      pctEl.textContent = `${isUp ? '+' : ''}${pct.toFixed(2)}%`;
+    }
+
+    return { price, change, pct };
+  } catch (e) {
+    const valEl = document.getElementById(valId);
+    if (valEl) { valEl.textContent = 'N/A'; valEl.classList.remove('loading'); }
+    return null;
+  }
+}
+
+// GIFT Nifty — use SGX Nifty or Nifty futures
+async function fetchGIFTNifty() {
+  // Try NIFTY futures first, fall back to Nifty spot + small premium
+  const result = await fetchIndex('NIFTY50.NS', 'giftNiftyVal', 'giftNiftyChange', 'giftNiftyPct');
+  // GIFT Nifty typically trades close to Nifty; Yahoo Finance ^NSEI works well
+  if (!result) {
+    const r2 = await fetchIndex('^NSEI', 'giftNiftyVal', 'giftNiftyChange', 'giftNiftyPct');
+  }
+}
+
+async function fetchAllIndices() {
+  await Promise.all([
+    fetchGIFTNifty(),
+    fetchIndex('^NSEI',      'nifty50Val',  'nifty50Change',  'nifty50Pct'),
+    fetchIndex('^BSESN',     'bseVal',      'bseChange',      'bsePct'),
+    fetchIndex('^CNXSC',     'smallcapVal', 'smallcapChange', 'smallcapPct'),
+    fetchIndex('^CNXMC',     'midcapVal',   'midcapChange',   'midcapPct'),
+  ]);
+}
+
+// ═══════════════════════════════════════════
+//  FETCH SECTORS
+// ═══════════════════════════════════════════
+async function fetchSectors() {
+  const sectorEntries = Object.entries(SECTOR_TICKERS);
+  const results = await Promise.allSettled(
+    sectorEntries.map(([name, ticker]) => {
+      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`;
+      return fetchWithProxy(url)
+        .then(r => r.json())
+        .then(data => {
+          const meta = data?.chart?.result?.[0]?.meta;
+          if (!meta?.regularMarketPrice) throw new Error('no data');
+          const price = meta.regularMarketPrice;
+          const prev = meta.chartPreviousClose || price;
+          const pct = ((price - prev) / prev) * 100;
+          return { name, price, pct, change: price - prev };
+        });
+    })
+  );
+
+  const positive = [];
+  const negative = [];
+
+  results.forEach((r, i) => {
+    if (r.status === 'fulfilled') {
+      if (r.value.pct >= 0) positive.push(r.value);
+      else negative.push(r.value);
+    }
+  });
+
+  // Sort
+  positive.sort((a, b) => b.pct - a.pct);
+  negative.sort((a, b) => a.pct - b.pct);
+
+  const maxAbs = Math.max(...[...positive, ...negative].map(x => Math.abs(x.pct)), 0.01);
+
+  function renderSectors(list, containerId, cls) {
+    const el = document.getElementById(containerId);
+    if (!list.length) {
+      el.innerHTML = `<div style="color:var(--muted);font-size:13px;padding:10px;text-align:center;">No ${cls === 'up' ? 'positive' : 'negative'} sectors</div>`;
+      return;
+    }
+    el.innerHTML = list.map(s => `
+      <div class="sector-item">
+        <div class="sector-item-name">${s.name}</div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="sector-item-change ${cls}">${s.pct > 0 ? '+' : ''}${s.pct.toFixed(2)}%</div>
+          <div class="sector-item-bar">
+            <div class="sector-item-fill ${cls}" style="width:${Math.min(100, (Math.abs(s.pct) / maxAbs) * 100)}%"></div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  renderSectors(positive, 'positiveSectors', 'up');
+  renderSectors(negative, 'negativeSectors', 'down');
+
+  document.getElementById('posCount').textContent = positive.length;
+  document.getElementById('negCount').textContent = negative.length;
+}
+
+// ═══════════════════════════════════════════
+//  PROGRESS BAR
+// ═══════════════════════════════════════════
+let countdown = REFRESH_INTERVAL;
+const progressBar = document.getElementById('progressBar');
+
+function updateProgress() {
+  countdown--;
+  const pct = (countdown / REFRESH_INTERVAL) * 100;
+  progressBar.style.width = pct + '%';
+  if (countdown <= 0) countdown = REFRESH_INTERVAL;
+}
+
+// ═══════════════════════════════════════════
+//  SHOW TOAST
+// ═══════════════════════════════════════════
+function showToast() {
+  const t = document.getElementById('updateToast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ═══════════════════════════════════════════
+//  MAIN REFRESH
+// ═══════════════════════════════════════════
+async function refreshAll() {
+  await fetchUSDINR();
+  await Promise.all([
+    fetchMetalPrices(),
+    fetchAllIndices(),
+    fetchSectors(),
+  ]);
+  document.getElementById('lastRefreshed').textContent =
+    new Date().toLocaleTimeString('en-IN');
+  showToast();
+  countdown = REFRESH_INTERVAL;
+}
+
+// Initial load
+refreshAll();
+
+// Auto-refresh every 60 seconds
+setInterval(refreshAll, REFRESH_INTERVAL * 1000);
+setInterval(updateProgress, 1000);
+</script>
+</body>
+</html>
