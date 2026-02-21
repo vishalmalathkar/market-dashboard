@@ -303,6 +303,7 @@
     .index-card.bse { border-top: 3px solid #38bdf8; }
     .index-card.smallcap { border-top: 3px solid #fb923c; }
     .index-card.midcap { border-top: 3px solid #34d399; }
+    .index-card.banknifty { border-top: 3px solid #f472b6; }
 
     .index-badge {
       display: inline-block;
@@ -320,6 +321,7 @@
     .index-card.bse .index-badge { background: rgba(56,189,248,0.15); color: #38bdf8; }
     .index-card.smallcap .index-badge { background: rgba(251,146,60,0.15); color: #fb923c; }
     .index-card.midcap .index-badge { background: rgba(52,211,153,0.15); color: #34d399; }
+    .index-card.banknifty .index-badge { background: rgba(244,114,182,0.15); color: #f472b6; }
 
     .index-name {
       font-size: 13px;
@@ -529,6 +531,308 @@
       margin-top: 6px;
     }
 
+    /* CURRENCY GRID */
+    .currency-note-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .currency-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .currency-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: transform 0.15s, border-color 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .currency-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,0.12);
+    }
+
+    .currency-card.inverted {
+      border-top: 2px solid #6366f1;
+    }
+
+    .currency-flag {
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .currency-pair {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .currency-name {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .currency-rate {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 22px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .currency-rate.loading {
+      font-size: 14px;
+      color: var(--muted);
+      animation: shimmer 1.5s infinite;
+    }
+
+    .currency-change {
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 7px;
+      border-radius: 5px;
+      width: fit-content;
+    }
+
+    .currency-change.up { background: rgba(34,197,94,0.1); color: var(--green); }
+    .currency-change.down { background: rgba(239,68,68,0.1); color: var(--red); }
+    .currency-change.neutral { background: rgba(100,116,139,0.1); color: var(--muted); }
+
+    .currency-skeleton {
+      height: 110px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      animation: shimmer 1.5s infinite;
+    }
+
+    /* AI BADGE */
+    .ai-badge {
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+
+    /* NEWS GRID */
+    .news-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 1100px) {
+      .news-grid { grid-template-columns: 1fr 1fr; }
+      .events-card { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 700px) {
+      .news-grid { grid-template-columns: 1fr; }
+      .events-card { grid-column: auto; }
+    }
+
+    .news-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .mood-card { border-top: 3px solid #a855f7; }
+    .events-card { border-top: 3px solid #38bdf8; }
+
+    .news-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+    }
+
+    .news-card-icon { font-size: 18px; }
+
+    .news-card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+    }
+
+    .news-refresh-btn {
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 16px;
+      transition: color 0.2s, transform 0.3s;
+      user-select: none;
+    }
+
+    .news-refresh-btn:hover { color: var(--text); transform: rotate(180deg); }
+
+    .mood-indicator {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mood-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: blink 2s infinite;
+    }
+
+    .mood-dot.bullish-dot { background: var(--green); box-shadow: 0 0 10px var(--green); }
+    .mood-dot.bearish-dot { background: var(--red); box-shadow: 0 0 10px var(--red); }
+    .mood-dot.neutral-dot { background: #f59e0b; box-shadow: 0 0 10px #f59e0b; }
+
+    .mood-label {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .mood-label.bullish { color: var(--green); }
+    .mood-label.bearish { color: var(--red); }
+    .mood-label.neutral { color: #f59e0b; }
+
+    .news-body {
+      padding: 16px 18px;
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text);
+      min-height: 120px;
+    }
+
+    .news-body p { margin-bottom: 8px; }
+
+    .news-item {
+      display: flex;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .news-item:last-child { border-bottom: none; }
+
+    .news-item-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gold);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .news-item-text {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    .news-item-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 4px;
+      margin-right: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .tag-bullish { background: rgba(34,197,94,0.15); color: var(--green); }
+    .tag-bearish { background: rgba(239,68,68,0.15); color: var(--red); }
+    .tag-neutral { background: rgba(245,200,66,0.15); color: var(--gold); }
+
+    .event-item {
+      display: flex;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      align-items: flex-start;
+    }
+
+    .event-item:last-child { border-bottom: none; }
+
+    .event-date {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      color: #38bdf8;
+      background: rgba(56,189,248,0.1);
+      padding: 3px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .event-desc {
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text);
+    }
+
+    .event-impact {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 2px;
+    }
+
+    .event-impact.high { color: var(--red); }
+    .event-impact.medium { color: var(--gold); }
+    .event-impact.low { color: var(--green); }
+
+    .news-loading-shimmer {
+      height: 14px;
+      background: var(--surface2);
+      border-radius: 6px;
+      margin-bottom: 10px;
+      animation: shimmer 1.5s infinite;
+      width: 100%;
+    }
+
+    .news-error {
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+      padding: 20px 0;
+    }
+
     .data-source-note {
       display: flex;
       align-items: center;
@@ -669,6 +973,16 @@
           <div class="change-chip neutral" id="midcapPct">—</div>
         </div>
       </div>
+
+      <div class="index-card banknifty">
+        <div class="index-badge">Bank Nifty</div>
+        <div class="index-name">Nifty Bank Index</div>
+        <div class="index-value loading" id="bankniftyVal">Loading...</div>
+        <div class="index-change-row">
+          <div class="change-chip neutral" id="bankniftyChange">—</div>
+          <div class="change-chip neutral" id="bankniftyPct">—</div>
+        </div>
+      </div>
     </div>
 
     <div class="data-source-note">
@@ -707,6 +1021,95 @@
 
     <div class="data-source-note" style="margin-top:8px">
       ℹ️ Sector data: NSE India sector indices via Yahoo Finance.
+    </div>
+
+    <!-- CURRENCIES -->
+    <div class="section-header">
+      <div class="section-title">💱 Currency Exchange Rates</div>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="currency-note-bar">
+      <span>🌍 All rates shown as: <strong>1 foreign currency = X INR</strong> &nbsp;|&nbsp; Last 2 rows: 1 INR = X foreign currency</span>
+    </div>
+
+    <div class="currency-grid" id="currencyGrid">
+      <!-- Populated by JS -->
+      <div class="currency-skeleton"></div>
+      <div class="currency-skeleton"></div>
+      <div class="currency-skeleton"></div>
+      <div class="currency-skeleton"></div>
+      <div class="currency-skeleton"></div>
+      <div class="currency-skeleton"></div>
+      <div class="currency-skeleton"></div>
+      <div class="currency-skeleton"></div>
+      <div class="currency-skeleton"></div>
+      <div class="currency-skeleton"></div>
+      <div class="currency-skeleton"></div>
+    </div>
+
+    <div class="data-source-note" style="margin-top:8px">
+      ℹ️ Exchange rates: Yahoo Finance (live, ~15-min delayed).
+    </div>
+
+    <!-- MARKET NEWS (AI Powered) -->
+    <div class="section-header">
+      <div class="section-title">📰 Market Intelligence</div>
+      <div class="section-line"></div>
+      <div class="ai-badge">✨ AI</div>
+    </div>
+
+    <div class="news-grid">
+      <!-- MARKET MOOD -->
+      <div class="news-card mood-card" id="marketMoodCard">
+        <div class="news-card-header">
+          <div class="news-card-icon">🧭</div>
+          <div class="news-card-title">Market Mood Today</div>
+          <div class="news-refresh-btn" onclick="fetchMarketNews()">↻</div>
+        </div>
+        <div class="mood-indicator" id="moodIndicator">
+          <div class="mood-dot neutral-dot"></div>
+          <div class="mood-label" id="moodLabel">Analysing...</div>
+        </div>
+        <div class="news-body" id="marketMoodText">
+          <div class="news-loading-shimmer"></div>
+          <div class="news-loading-shimmer" style="width:85%"></div>
+          <div class="news-loading-shimmer" style="width:70%"></div>
+        </div>
+      </div>
+
+      <!-- TOP 5 NEWS -->
+      <div class="news-card" id="top5NewsCard">
+        <div class="news-card-header">
+          <div class="news-card-icon">🔥</div>
+          <div class="news-card-title">Top 5 Market-Moving News</div>
+        </div>
+        <div class="news-body" id="top5NewsText">
+          <div class="news-loading-shimmer"></div>
+          <div class="news-loading-shimmer" style="width:90%"></div>
+          <div class="news-loading-shimmer" style="width:75%"></div>
+          <div class="news-loading-shimmer" style="width:88%"></div>
+          <div class="news-loading-shimmer" style="width:80%"></div>
+        </div>
+      </div>
+
+      <!-- UPCOMING EVENTS -->
+      <div class="news-card events-card" id="upcomingEventsCard">
+        <div class="news-card-header">
+          <div class="news-card-icon">📅</div>
+          <div class="news-card-title">Upcoming Market Events</div>
+        </div>
+        <div class="news-body" id="upcomingEventsText">
+          <div class="news-loading-shimmer"></div>
+          <div class="news-loading-shimmer" style="width:80%"></div>
+          <div class="news-loading-shimmer" style="width:92%"></div>
+          <div class="news-loading-shimmer" style="width:70%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="data-source-note" style="margin-top:8px">
+      ℹ️ Market Intelligence powered by AI — refreshes every 5 minutes. Not financial advice.
     </div>
 
   </main>
@@ -988,7 +1391,218 @@ async function fetchAllIndices() {
     fetchIndex('^BSESN',     'bseVal',      'bseChange',      'bsePct'),
     fetchIndex('^CNXSC',     'smallcapVal', 'smallcapChange', 'smallcapPct'),
     fetchIndex('^CNXMC',     'midcapVal',   'midcapChange',   'midcapPct'),
+    fetchIndex('^NSEBANK',   'bankniftyVal','bankniftyChange','bankniftyPct'),
   ]);
+}
+
+// ═══════════════════════════════════════════
+//  CURRENCY EXCHANGE RATES
+// ═══════════════════════════════════════════
+const CURRENCY_PAIRS = [
+  { pair: 'USDINR=X',  flag: '🇺🇸', name: 'US Dollar',         symbol: '$',  label: 'USD → INR', inverted: false },
+  { pair: 'GBPINR=X',  flag: '🇬🇧', name: 'British Pound',     symbol: '£',  label: 'GBP → INR', inverted: false },
+  { pair: 'EURINR=X',  flag: '🇪🇺', name: 'Euro',              symbol: '€',  label: 'EUR → INR', inverted: false },
+  { pair: 'AEDINR=X',  flag: '🇦🇪', name: 'UAE Dirham',        symbol: 'AED',label: 'AED → INR', inverted: false },
+  { pair: 'THBINR=X',  flag: '🇹🇭', name: 'Thai Baht',         symbol: '฿',  label: 'THB → INR', inverted: false },
+  { pair: 'LKRINR=X',  flag: '🇱🇰', name: 'Sri Lankan Rupee',  symbol: 'LKR',label: 'LKR → INR', inverted: false },
+  { pair: 'SARINR=X',  flag: '🇸🇦', name: 'Saudi Riyal',       symbol: 'SR', label: 'SAR → INR', inverted: false },
+  { pair: 'CNYINR=X',  flag: '🇨🇳', name: 'Chinese Yuan',      symbol: '¥',  label: 'CNY → INR', inverted: false },
+  { pair: 'NPRINR=X',  flag: '🇳🇵', name: 'Nepalese Rupee',    symbol: 'NPR',label: 'NPR → INR', inverted: false },
+  { pair: 'INRIDR=X',  flag: '🇮🇩', name: 'Indonesian Rupiah', symbol: 'Rp', label: 'INR → IDR', inverted: true  },
+  { pair: 'INRVND=X',  flag: '🇻🇳', name: 'Vietnamese Dong',   symbol: '₫',  label: 'INR → VND', inverted: true  },
+];
+
+async function fetchCurrencyPair(pair) {
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(pair)}?interval=1d&range=1d`;
+  const resp = await fetchWithProxy(url);
+  const data = await resp.json();
+  const meta = data?.chart?.result?.[0]?.meta;
+  if (!meta?.regularMarketPrice) throw new Error('no data');
+  const price = meta.regularMarketPrice;
+  const prev = meta.chartPreviousClose || price;
+  const change = price - prev;
+  const pct = (change / prev) * 100;
+  return { price, change, pct };
+}
+
+function fmtCurrencyRate(val, inverted) {
+  if (!isFinite(val)) return '—';
+  // Inverted pairs (INR→Foreign) can be large numbers
+  if (inverted && val > 1000) return val.toLocaleString('en-IN', { maximumFractionDigits: 0 });
+  if (val < 1) return val.toFixed(4);
+  if (val < 10) return val.toFixed(3);
+  return val.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+async function fetchCurrencies() {
+  const grid = document.getElementById('currencyGrid');
+
+  // Build card shells first
+  grid.innerHTML = CURRENCY_PAIRS.map((c, i) => `
+    <div class="currency-card${c.inverted ? ' inverted' : ''}" id="cc-${i}">
+      <div class="currency-flag">${c.flag}</div>
+      <div class="currency-pair">${c.label}</div>
+      <div class="currency-name">${c.name}</div>
+      <div class="currency-rate loading" id="cr-${i}">Loading...</div>
+      <div class="currency-change neutral" id="cc-ch-${i}">—</div>
+    </div>
+  `).join('');
+
+  const results = await Promise.allSettled(CURRENCY_PAIRS.map(c => fetchCurrencyPair(c.pair)));
+
+  results.forEach((r, i) => {
+    const rateEl = document.getElementById(`cr-${i}`);
+    const changeEl = document.getElementById(`cc-ch-${i}`);
+    if (!rateEl) return;
+
+    if (r.status === 'fulfilled') {
+      const { price, change, pct } = r.value;
+      const c = CURRENCY_PAIRS[i];
+      rateEl.classList.remove('loading');
+
+      if (c.inverted) {
+        rateEl.textContent = `${c.symbol} ${fmtCurrencyRate(price, true)}`;
+      } else {
+        rateEl.textContent = `₹ ${fmtCurrencyRate(price, false)}`;
+      }
+
+      const cls = change > 0 ? 'up' : change < 0 ? 'down' : 'neutral';
+      const arrow = change > 0 ? '▲' : change < 0 ? '▼' : '—';
+      changeEl.className = `currency-change ${cls}`;
+      changeEl.textContent = `${arrow} ${Math.abs(pct).toFixed(2)}%`;
+    } else {
+      rateEl.textContent = 'N/A';
+      rateEl.classList.remove('loading');
+    }
+  });
+}
+
+// ═══════════════════════════════════════════
+//  AI MARKET NEWS (Claude API in Claude!)
+// ═══════════════════════════════════════════
+let newsLastFetched = 0;
+const NEWS_REFRESH_MS = 5 * 60 * 1000; // 5 minutes
+
+async function fetchMarketNews() {
+  const now = Date.now();
+  if (now - newsLastFetched < NEWS_REFRESH_MS) return;
+  newsLastFetched = now;
+
+  // Collect current market data to give AI context
+  const niftyEl = document.getElementById('nifty50Val');
+  const niftyPctEl = document.getElementById('nifty50Pct');
+  const sensexEl = document.getElementById('bseVal');
+  const sensexPctEl = document.getElementById('bsePct');
+  const goldEl = document.getElementById('goldPrice');
+  const usdInrEl = document.getElementById('cr-0');
+  const posEl = document.getElementById('posCount');
+  const negEl = document.getElementById('negCount');
+  const posSecEl = document.getElementById('positiveSectors');
+  const negSecEl = document.getElementById('negativeSectors');
+
+  const niftyVal = niftyEl?.textContent || 'unknown';
+  const niftyPct = niftyPctEl?.textContent || 'unknown';
+  const sensexVal = sensexEl?.textContent || 'unknown';
+  const sensexPct = sensexPctEl?.textContent || 'unknown';
+  const goldVal = goldEl?.textContent || 'unknown';
+  const usdInrVal = usdInrEl?.textContent || 'unknown';
+  const posSectors = posSecEl ? [...posSecEl.querySelectorAll('.sector-item-name')].map(e => e.textContent).join(', ') : '';
+  const negSectors = negSecEl ? [...negSecEl.querySelectorAll('.sector-item-name')].map(e => e.textContent).join(', ') : '';
+
+  const today = new Date().toLocaleDateString('en-IN', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  const contextPrompt = `Today is ${today}. 
+Current market data (Indian markets):
+- Nifty 50: ${niftyVal} (${niftyPct})
+- BSE Sensex: ${sensexVal} (${sensexPct})
+- Gold 10g: ${goldVal}
+- USD/INR: ${usdInrVal}
+- Positive sectors: ${posSectors || 'data loading'}
+- Negative sectors: ${negSectors || 'data loading'}
+
+Based on today's date and these live market conditions, provide:
+
+1. MARKET_MOOD: One word — BULLISH, BEARISH, or NEUTRAL
+2. MOOD_REASON: 2-3 sentences explaining why market is positive/negative/mixed today based on current data and typical macro factors for this period.
+3. TOP5_NEWS: List 5 concise market-moving news items or factors (real or likely for this date) that are impacting Indian markets today. Format each as: [IMPACT|headline - brief detail] where IMPACT is BULLISH, BEARISH, or NEUTRAL.
+4. UPCOMING_EVENTS: List 4-5 upcoming events in next 2-4 weeks that could significantly impact Indian markets. Format each as: [DATE|EVENT|IMPACT_LEVEL] where DATE is approximate, EVENT is the event name, IMPACT_LEVEL is HIGH, MEDIUM, or LOW.
+
+Respond ONLY in this exact JSON format, no other text:
+{
+  "mood": "BULLISH",
+  "moodReason": "...",
+  "top5": [
+    {"impact": "BULLISH", "headline": "...", "detail": "..."},
+    ...
+  ],
+  "events": [
+    {"date": "Mar 1", "event": "...", "impact": "HIGH"},
+    ...
+  ]
+}`;
+
+  try {
+    // Show loading state
+    document.getElementById('marketMoodText').innerHTML = `<div class="news-loading-shimmer"></div><div class="news-loading-shimmer" style="width:80%"></div>`;
+    document.getElementById('top5NewsText').innerHTML = `<div class="news-loading-shimmer"></div><div class="news-loading-shimmer" style="width:90%"></div><div class="news-loading-shimmer" style="width:75%"></div><div class="news-loading-shimmer" style="width:85%"></div><div class="news-loading-shimmer" style="width:70%"></div>`;
+    document.getElementById('upcomingEventsText').innerHTML = `<div class="news-loading-shimmer"></div><div class="news-loading-shimmer" style="width:85%"></div><div class="news-loading-shimmer" style="width:70%"></div>`;
+
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        messages: [{ role: "user", content: contextPrompt }]
+      })
+    });
+
+    const data = await response.json();
+    const text = data.content?.map(b => b.text || '').join('') || '';
+    const clean = text.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(clean);
+
+    // Render MOOD
+    const mood = (parsed.mood || 'NEUTRAL').toUpperCase();
+    const moodDot = document.getElementById('moodIndicator').querySelector('.mood-dot');
+    const moodLabel = document.getElementById('moodLabel');
+    moodDot.className = `mood-dot ${mood === 'BULLISH' ? 'bullish-dot' : mood === 'BEARISH' ? 'bearish-dot' : 'neutral-dot'}`;
+    moodLabel.className = `mood-label ${mood === 'BULLISH' ? 'bullish' : mood === 'BEARISH' ? 'bearish' : 'neutral'}`;
+    moodLabel.textContent = mood === 'BULLISH' ? '📈 Bullish' : mood === 'BEARISH' ? '📉 Bearish' : '⚖️ Neutral / Mixed';
+    document.getElementById('marketMoodText').innerHTML = `<p>${parsed.moodReason || ''}</p>`;
+
+    // Render TOP 5
+    const top5Html = (parsed.top5 || []).map((item, idx) => {
+      const tagCls = item.impact === 'BULLISH' ? 'tag-bullish' : item.impact === 'BEARISH' ? 'tag-bearish' : 'tag-neutral';
+      return `<div class="news-item">
+        <div class="news-item-num">${idx + 1}</div>
+        <div class="news-item-text">
+          <span class="news-item-tag ${tagCls}">${item.impact}</span>
+          <strong>${item.headline}</strong> — ${item.detail}
+        </div>
+      </div>`;
+    }).join('');
+    document.getElementById('top5NewsText').innerHTML = top5Html || '<div class="news-error">No data available</div>';
+
+    // Render EVENTS
+    const eventsHtml = (parsed.events || []).map(ev => {
+      const impactCls = ev.impact === 'HIGH' ? 'high' : ev.impact === 'MEDIUM' ? 'medium' : 'low';
+      return `<div class="event-item">
+        <div class="event-date">${ev.date}</div>
+        <div>
+          <div class="event-desc">${ev.event}</div>
+          <div class="event-impact ${impactCls}">⚡ ${ev.impact} IMPACT</div>
+        </div>
+      </div>`;
+    }).join('');
+    document.getElementById('upcomingEventsText').innerHTML = eventsHtml || '<div class="news-error">No data available</div>';
+
+  } catch(e) {
+    console.error('News fetch error:', e);
+    document.getElementById('marketMoodText').innerHTML = `<div class="news-error">Could not load market analysis. Please try again.</div>`;
+    document.getElementById('top5NewsText').innerHTML = `<div class="news-error">Could not load news. Please try again.</div>`;
+    document.getElementById('upcomingEventsText').innerHTML = `<div class="news-error">Could not load events. Please try again.</div>`;
+    newsLastFetched = 0; // allow retry
+  }
 }
 
 // ═══════════════════════════════════════════
@@ -1085,7 +1699,9 @@ async function refreshAll() {
     fetchMetalPrices(),
     fetchAllIndices(),
     fetchSectors(),
+    fetchCurrencies(),
   ]);
+  fetchMarketNews(); // runs independently, throttled to every 5 min
   document.getElementById('lastRefreshed').textContent =
     new Date().toLocaleTimeString('en-IN');
   showToast();
