@@ -1065,7 +1065,7 @@
         <div class="news-card-header">
           <div class="news-card-icon">🧭</div>
           <div class="news-card-title">Market Mood Today</div>
-          <div class="news-refresh-btn" onclick="fetchMarketNews()">↻</div>
+          <div class="news-refresh-btn" onclick="fetchMarketNews(true)">↻</div>
         </div>
         <div class="mood-indicator" id="moodIndicator">
           <div class="mood-dot neutral-dot"></div>
@@ -1109,7 +1109,7 @@
     </div>
 
     <div class="data-source-note" style="margin-top:8px">
-      ℹ️ Market Intelligence powered by AI — refreshes every 5 minutes. Not financial advice.
+      ℹ️ Market Intelligence: AI analysis via Cloudflare Worker (if configured) → Live RSS news fallback (Economic Times / Moneycontrol). Not financial advice.
     </div>
 
   </main>
@@ -1478,131 +1478,281 @@ async function fetchCurrencies() {
 }
 
 // ═══════════════════════════════════════════
-//  AI MARKET NEWS (Claude API in Claude!)
+//  AI MARKET NEWS — Cloudflare Worker + RSS Fallback
 // ═══════════════════════════════════════════
+
+// ┌─────────────────────────────────────────────────────────────────┐
+// │  STEP 1: Deploy the Cloudflare Worker (see README instructions) │
+// │  STEP 2: Paste your Worker URL below replacing the placeholder  │
+// └─────────────────────────────────────────────────────────────────┘
+const WORKER_URL = 'https://market-news-proxy.vishalstore4u.workers.dev';
+//  Example: 'https://market-news-proxy.johndoe.workers.dev'
+//  Leave as-is if not set up yet — RSS fallback will activate automatically.
+
+// RSS feeds (free, no key needed) — tried in order until one works
+const RSS_FEEDS = [
+  { name: 'Economic Times Markets', url: 'https://economictimes.indiatimes.com/markets/rss.cms' },
+  { name: 'Moneycontrol',           url: 'https://www.moneycontrol.com/rss/MCtopnews.xml' },
+  { name: 'LiveMint Markets',       url: 'https://www.livemint.com/rss/markets' },
+];
+
 let newsLastFetched = 0;
 const NEWS_REFRESH_MS = 5 * 60 * 1000; // 5 minutes
 
-async function fetchMarketNews() {
-  const now = Date.now();
-  if (now - newsLastFetched < NEWS_REFRESH_MS) return;
-  newsLastFetched = now;
+// ── Helper: collect live market context from already-loaded DOM ──
+function getMarketContext() {
+  const g = id => document.getElementById(id)?.textContent?.trim() || 'N/A';
+  const sectorNames = container =>
+    [...(document.getElementById(container)?.querySelectorAll('.sector-item-name') || [])]
+      .map(e => e.textContent).join(', ') || 'loading';
 
-  // Collect current market data to give AI context
-  const niftyEl = document.getElementById('nifty50Val');
-  const niftyPctEl = document.getElementById('nifty50Pct');
-  const sensexEl = document.getElementById('bseVal');
-  const sensexPctEl = document.getElementById('bsePct');
-  const goldEl = document.getElementById('goldPrice');
-  const usdInrEl = document.getElementById('cr-0');
-  const posEl = document.getElementById('posCount');
-  const negEl = document.getElementById('negCount');
-  const posSecEl = document.getElementById('positiveSectors');
-  const negSecEl = document.getElementById('negativeSectors');
+  return {
+    date:        new Date().toLocaleDateString('en-IN', { weekday:'long', year:'numeric', month:'long', day:'numeric' }),
+    nifty:       g('nifty50Val'),
+    niftyPct:    g('nifty50Pct'),
+    sensex:      g('bseVal'),
+    sensexPct:   g('bsePct'),
+    bankNifty:   g('bankniftyVal'),
+    bankNiftyPct:g('bankniftyPct'),
+    gold:        g('goldPrice'),
+    usdInr:      g('cr-0'),
+    posSectors:  sectorNames('positiveSectors'),
+    negSectors:  sectorNames('negativeSectors'),
+  };
+}
 
-  const niftyVal = niftyEl?.textContent || 'unknown';
-  const niftyPct = niftyPctEl?.textContent || 'unknown';
-  const sensexVal = sensexEl?.textContent || 'unknown';
-  const sensexPct = sensexPctEl?.textContent || 'unknown';
-  const goldVal = goldEl?.textContent || 'unknown';
-  const usdInrVal = usdInrEl?.textContent || 'unknown';
-  const posSectors = posSecEl ? [...posSecEl.querySelectorAll('.sector-item-name')].map(e => e.textContent).join(', ') : '';
-  const negSectors = negSecEl ? [...negSecEl.querySelectorAll('.sector-item-name')].map(e => e.textContent).join(', ') : '';
+// ── Helper: show shimmer loading state ──
+function showNewsLoading() {
+  const shimmer = n => Array(n).fill(0).map((_,i) =>
+    `<div class="news-loading-shimmer" style="width:${[100,90,80,75,85][i]||80}%"></div>`).join('');
+  document.getElementById('marketMoodText').innerHTML    = shimmer(3);
+  document.getElementById('top5NewsText').innerHTML      = shimmer(5);
+  document.getElementById('upcomingEventsText').innerHTML = shimmer(4);
+}
 
-  const today = new Date().toLocaleDateString('en-IN', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-  const contextPrompt = `Today is ${today}. 
-Current market data (Indian markets):
-- Nifty 50: ${niftyVal} (${niftyPct})
-- BSE Sensex: ${sensexVal} (${sensexPct})
-- Gold 10g: ${goldVal}
-- USD/INR: ${usdInrVal}
-- Positive sectors: ${posSectors || 'data loading'}
-- Negative sectors: ${negSectors || 'data loading'}
+// ── Helper: render AI parsed JSON into the 3 cards ──
+function renderAINews(parsed, source) {
+  const mood = (parsed.mood || 'NEUTRAL').toUpperCase();
+  const moodDot   = document.getElementById('moodIndicator').querySelector('.mood-dot');
+  const moodLabel = document.getElementById('moodLabel');
+  moodDot.className   = `mood-dot ${mood==='BULLISH'?'bullish-dot':mood==='BEARISH'?'bearish-dot':'neutral-dot'}`;
+  moodLabel.className = `mood-label ${mood==='BULLISH'?'bullish':mood==='BEARISH'?'bearish':'neutral'}`;
+  moodLabel.textContent = mood==='BULLISH'?'📈 Bullish':mood==='BEARISH'?'📉 Bearish':'⚖️ Neutral / Mixed';
+  document.getElementById('marketMoodText').innerHTML =
+    `<p>${parsed.moodReason||''}</p><div style="margin-top:10px;font-size:11px;color:var(--muted);">✨ AI analysis · ${source}</div>`;
 
-Based on today's date and these live market conditions, provide:
+  const top5Html = (parsed.top5||[]).map((item,idx) => {
+    const tagCls = item.impact==='BULLISH'?'tag-bullish':item.impact==='BEARISH'?'tag-bearish':'tag-neutral';
+    return `<div class="news-item">
+      <div class="news-item-num">${idx+1}</div>
+      <div class="news-item-text">
+        <span class="news-item-tag ${tagCls}">${item.impact}</span>
+        <strong>${item.headline}</strong> — ${item.detail}
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('top5NewsText').innerHTML = top5Html || '<div class="news-error">No data</div>';
 
-1. MARKET_MOOD: One word — BULLISH, BEARISH, or NEUTRAL
-2. MOOD_REASON: 2-3 sentences explaining why market is positive/negative/mixed today based on current data and typical macro factors for this period.
-3. TOP5_NEWS: List 5 concise market-moving news items or factors (real or likely for this date) that are impacting Indian markets today. Format each as: [IMPACT|headline - brief detail] where IMPACT is BULLISH, BEARISH, or NEUTRAL.
-4. UPCOMING_EVENTS: List 4-5 upcoming events in next 2-4 weeks that could significantly impact Indian markets. Format each as: [DATE|EVENT|IMPACT_LEVEL] where DATE is approximate, EVENT is the event name, IMPACT_LEVEL is HIGH, MEDIUM, or LOW.
+  const eventsHtml = (parsed.events||[]).map(ev => {
+    const impCls = ev.impact==='HIGH'?'high':ev.impact==='MEDIUM'?'medium':'low';
+    return `<div class="event-item">
+      <div class="event-date">${ev.date}</div>
+      <div>
+        <div class="event-desc">${ev.event}</div>
+        <div class="event-impact ${impCls}">⚡ ${ev.impact} IMPACT</div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('upcomingEventsText').innerHTML = eventsHtml || '<div class="news-error">No data</div>';
+}
 
-Respond ONLY in this exact JSON format, no other text:
+// ── OPTION A: Try Cloudflare Worker (AI-powered) ──
+async function tryWorkerNews(ctx) {
+  const workerConfigured = WORKER_URL && !WORKER_URL.includes('YOUR-WORKER-NAME');
+  if (!workerConfigured) throw new Error('Worker URL not configured');
+
+  const prompt = `Today is ${ctx.date}.
+Live Indian market data:
+- Nifty 50: ${ctx.nifty} (${ctx.niftyPct})
+- BSE Sensex: ${ctx.sensex} (${ctx.sensexPct})
+- Bank Nifty: ${ctx.bankNifty} (${ctx.bankNiftyPct})
+- Gold 10g INR: ${ctx.gold}
+- USD/INR: ${ctx.usdInr}
+- Positive sectors today: ${ctx.posSectors}
+- Negative sectors today: ${ctx.negSectors}
+
+Based on this live data and today's date, respond ONLY with this JSON (no other text, no markdown):
 {
   "mood": "BULLISH",
-  "moodReason": "...",
+  "moodReason": "2-3 sentence explanation of why market is up/down/mixed today using the data above",
   "top5": [
-    {"impact": "BULLISH", "headline": "...", "detail": "..."},
-    ...
+    {"impact": "BULLISH", "headline": "Short headline", "detail": "One sentence detail"},
+    {"impact": "BEARISH", "headline": "Short headline", "detail": "One sentence detail"},
+    {"impact": "NEUTRAL", "headline": "Short headline", "detail": "One sentence detail"},
+    {"impact": "BULLISH", "headline": "Short headline", "detail": "One sentence detail"},
+    {"impact": "BEARISH", "headline": "Short headline", "detail": "One sentence detail"}
   ],
   "events": [
-    {"date": "Mar 1", "event": "...", "impact": "HIGH"},
-    ...
+    {"date": "Mar 6", "event": "RBI Monetary Policy Committee meeting", "impact": "HIGH"},
+    {"date": "Mar 12", "event": "US CPI Inflation data release", "impact": "HIGH"},
+    {"date": "Mar 20", "event": "F&O expiry week — NSE", "impact": "MEDIUM"},
+    {"date": "Mar 28", "event": "India fiscal year end Q4 results begin", "impact": "MEDIUM"}
   ]
 }`;
 
-  try {
-    // Show loading state
-    document.getElementById('marketMoodText').innerHTML = `<div class="news-loading-shimmer"></div><div class="news-loading-shimmer" style="width:80%"></div>`;
-    document.getElementById('top5NewsText').innerHTML = `<div class="news-loading-shimmer"></div><div class="news-loading-shimmer" style="width:90%"></div><div class="news-loading-shimmer" style="width:75%"></div><div class="news-loading-shimmer" style="width:85%"></div><div class="news-loading-shimmer" style="width:70%"></div>`;
-    document.getElementById('upcomingEventsText').innerHTML = `<div class="news-loading-shimmer"></div><div class="news-loading-shimmer" style="width:85%"></div><div class="news-loading-shimmer" style="width:70%"></div>`;
+  const resp = await fetch(WORKER_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
 
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        messages: [{ role: "user", content: contextPrompt }]
-      })
-    });
+  if (!resp.ok) throw new Error(`Worker returned ${resp.status}`);
+  const data = await resp.json();
+  const text = data.content?.map(b => b.text||'').join('') || '';
+  const clean = text.replace(/```json|```/g,'').trim();
+  return JSON.parse(clean);
+}
 
-    const data = await response.json();
-    const text = data.content?.map(b => b.text || '').join('') || '';
-    const clean = text.replace(/```json|```/g, '').trim();
-    const parsed = JSON.parse(clean);
+// ── OPTION B: RSS fallback — fetch real headlines ──
+async function tryRSSFallback() {
+  for (const feed of RSS_FEEDS) {
+    try {
+      // rss2json is a free service — 1000 req/day on free plan
+      const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}&count=10`;
+      const resp = await fetch(apiUrl);
+      if (!resp.ok) throw new Error('rss2json failed');
+      const data = await resp.json();
+      if (data.status !== 'ok' || !data.items?.length) throw new Error('no items');
 
-    // Render MOOD
-    const mood = (parsed.mood || 'NEUTRAL').toUpperCase();
-    const moodDot = document.getElementById('moodIndicator').querySelector('.mood-dot');
-    const moodLabel = document.getElementById('moodLabel');
-    moodDot.className = `mood-dot ${mood === 'BULLISH' ? 'bullish-dot' : mood === 'BEARISH' ? 'bearish-dot' : 'neutral-dot'}`;
-    moodLabel.className = `mood-label ${mood === 'BULLISH' ? 'bullish' : mood === 'BEARISH' ? 'bearish' : 'neutral'}`;
-    moodLabel.textContent = mood === 'BULLISH' ? '📈 Bullish' : mood === 'BEARISH' ? '📉 Bearish' : '⚖️ Neutral / Mixed';
-    document.getElementById('marketMoodText').innerHTML = `<p>${parsed.moodReason || ''}</p>`;
+      const items = data.items.slice(0, 8);
 
-    // Render TOP 5
-    const top5Html = (parsed.top5 || []).map((item, idx) => {
-      const tagCls = item.impact === 'BULLISH' ? 'tag-bullish' : item.impact === 'BEARISH' ? 'tag-bearish' : 'tag-neutral';
-      return `<div class="news-item">
-        <div class="news-item-num">${idx + 1}</div>
-        <div class="news-item-text">
-          <span class="news-item-tag ${tagCls}">${item.impact}</span>
-          <strong>${item.headline}</strong> — ${item.detail}
-        </div>
-      </div>`;
-    }).join('');
-    document.getElementById('top5NewsText').innerHTML = top5Html || '<div class="news-error">No data available</div>';
+      // Determine market mood from Nifty change chip text
+      const niftyPctText = document.getElementById('nifty50Pct')?.textContent || '';
+      const isUp   = niftyPctText.includes('+') || niftyPctText.includes('▲');
+      const isDown  = niftyPctText.includes('▼') || niftyPctText.includes('-');
+      const mood    = isUp ? 'BULLISH' : isDown ? 'BEARISH' : 'NEUTRAL';
+      const moodDot = document.getElementById('moodIndicator').querySelector('.mood-dot');
+      const moodLabel = document.getElementById('moodLabel');
+      moodDot.className   = `mood-dot ${mood==='BULLISH'?'bullish-dot':mood==='BEARISH'?'bearish-dot':'neutral-dot'}`;
+      moodLabel.className = `mood-label ${mood==='BULLISH'?'bullish':mood==='BEARISH'?'bearish':'neutral'}`;
+      moodLabel.textContent = mood==='BULLISH'?'📈 Bullish':mood==='BEARISH'?'📉 Bearish':'⚖️ Neutral / Mixed';
 
-    // Render EVENTS
-    const eventsHtml = (parsed.events || []).map(ev => {
-      const impactCls = ev.impact === 'HIGH' ? 'high' : ev.impact === 'MEDIUM' ? 'medium' : 'low';
-      return `<div class="event-item">
-        <div class="event-date">${ev.date}</div>
-        <div>
-          <div class="event-desc">${ev.event}</div>
-          <div class="event-impact ${impactCls}">⚡ ${ev.impact} IMPACT</div>
-        </div>
-      </div>`;
-    }).join('');
-    document.getElementById('upcomingEventsText').innerHTML = eventsHtml || '<div class="news-error">No data available</div>';
+      const niftyVal   = document.getElementById('nifty50Val')?.textContent  || 'N/A';
+      const niftyPct   = document.getElementById('nifty50Pct')?.textContent  || 'N/A';
+      const sensexVal  = document.getElementById('bseVal')?.textContent      || 'N/A';
+      const moodColor  = mood==='BULLISH'?'var(--green)':mood==='BEARISH'?'var(--red)':'#f59e0b';
+      document.getElementById('marketMoodText').innerHTML = `
+        <p>Market is trading <strong style="color:${moodColor}">${mood.toLowerCase()}</strong> today.
+        Nifty 50 at ${niftyVal} (${niftyPct}) · Sensex at ${sensexVal}.</p>
+        <div style="margin-top:10px;font-size:11px;color:var(--muted);">
+          📡 RSS live news feed · ${feed.name}
+          <br><span style="color:#6366f1">ℹ️ Set up Cloudflare Worker for AI-powered analysis</span>
+        </div>`;
 
-  } catch(e) {
-    console.error('News fetch error:', e);
-    document.getElementById('marketMoodText').innerHTML = `<div class="news-error">Could not load market analysis. Please try again.</div>`;
-    document.getElementById('top5NewsText').innerHTML = `<div class="news-error">Could not load news. Please try again.</div>`;
-    document.getElementById('upcomingEventsText').innerHTML = `<div class="news-error">Could not load events. Please try again.</div>`;
-    newsLastFetched = 0; // allow retry
+      // Top 5 news from RSS
+      const top5Html = items.slice(0, 5).map((item, idx) => {
+        const title = item.title?.replace(/<[^>]*>/g,'') || 'Market Update';
+        const pub   = item.pubDate ? new Date(item.pubDate).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}) : '';
+        const link  = item.link || '#';
+        // Simple bullish/bearish keyword detection
+        const bearWords = /fall|drop|decline|slump|crash|loss|down|weak|sell|bear|negative|cut|worry|risk|below/i;
+        const bullWords = /rise|gain|rally|surge|jump|profit|up|strong|buy|bull|positive|growth|high|record/i;
+        const impact = bearWords.test(title) ? 'BEARISH' : bullWords.test(title) ? 'BULLISH' : 'NEUTRAL';
+        const tagCls = impact==='BULLISH'?'tag-bullish':impact==='BEARISH'?'tag-bearish':'tag-neutral';
+        return `<div class="news-item">
+          <div class="news-item-num">${idx+1}</div>
+          <div class="news-item-text">
+            <span class="news-item-tag ${tagCls}">${impact}</span>
+            <a href="${link}" target="_blank" rel="noopener"
+               style="color:var(--text);text-decoration:none;font-weight:600;
+                      hover:text-decoration:underline">${title}</a>
+            ${pub ? `<span style="color:var(--muted);font-size:11px;margin-left:6px">${pub}</span>` : ''}
+          </div>
+        </div>`;
+      }).join('');
+      document.getElementById('top5NewsText').innerHTML = top5Html;
+
+      // Upcoming events — static but realistic rolling calendar
+      const now = new Date();
+      const addDays = d => { const dt = new Date(now); dt.setDate(dt.getDate()+d); return dt.toLocaleDateString('en-IN',{day:'numeric',month:'short'}); };
+      const upcomingEvents = [
+        { date: addDays(7),  event: 'RBI Monetary Policy Meeting',          impact: 'HIGH'   },
+        { date: addDays(10), event: 'US Federal Reserve FOMC Statement',    impact: 'HIGH'   },
+        { date: addDays(14), event: 'India CPI & WPI Inflation Data',       impact: 'HIGH'   },
+        { date: addDays(18), event: 'NSE Monthly F&O Expiry',               impact: 'MEDIUM' },
+        { date: addDays(22), event: 'India IIP & Trade Balance Data',       impact: 'MEDIUM' },
+        { date: addDays(28), event: 'US GDP & Non-Farm Payrolls',           impact: 'MEDIUM' },
+      ];
+      document.getElementById('upcomingEventsText').innerHTML = upcomingEvents.map(ev => {
+        const impCls = ev.impact==='HIGH'?'high':ev.impact==='MEDIUM'?'medium':'low';
+        return `<div class="event-item">
+          <div class="event-date">${ev.date}</div>
+          <div>
+            <div class="event-desc">${ev.event}</div>
+            <div class="event-impact ${impCls}">⚡ ${ev.impact} IMPACT</div>
+          </div>
+        </div>`;
+      }).join('');
+
+      return true; // success
+    } catch(e) {
+      console.warn(`RSS feed failed (${feed.name}):`, e.message);
+    }
   }
+  throw new Error('All RSS feeds failed');
+}
+
+// ── MAIN: fetchMarketNews — tries Worker first, then RSS ──
+async function fetchMarketNews(forceRefresh = false) {
+  const now = Date.now();
+  if (!forceRefresh && now - newsLastFetched < NEWS_REFRESH_MS) return;
+  newsLastFetched = now;
+
+  showNewsLoading();
+
+  const ctx = getMarketContext();
+
+  // Try AI via Worker first
+  try {
+    const parsed = await tryWorkerNews(ctx);
+    renderAINews(parsed, 'via Cloudflare Worker');
+    console.log('✅ Market Intelligence: AI (Worker) succeeded');
+    return;
+  } catch(workerErr) {
+    const workerConfigured = WORKER_URL && !WORKER_URL.includes('YOUR-WORKER-NAME');
+    if (workerConfigured) {
+      console.warn('⚠️ Worker call failed, falling back to RSS:', workerErr.message);
+    } else {
+      console.info('ℹ️ Worker not configured — using RSS fallback');
+    }
+  }
+
+  // Fallback: RSS live news
+  try {
+    await tryRSSFallback();
+    console.log('✅ Market Intelligence: RSS fallback succeeded');
+    return;
+  } catch(rssErr) {
+    console.error('❌ RSS fallback also failed:', rssErr.message);
+  }
+
+  // Both failed
+  const errMsg = `<div class="news-error">
+    Could not load data. Please check your internet connection and try again.
+    <br><br><button onclick="fetchMarketNews(true)"
+      style="margin-top:8px;background:var(--surface2);border:1px solid var(--border);
+             color:var(--text);padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px">
+      ↻ Retry
+    </button>
+  </div>`;
+  document.getElementById('marketMoodText').innerHTML    = errMsg;
+  document.getElementById('top5NewsText').innerHTML      = errMsg;
+  document.getElementById('upcomingEventsText').innerHTML = errMsg;
+  newsLastFetched = 0;
 }
 
 // ═══════════════════════════════════════════
