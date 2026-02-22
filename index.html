@@ -26,7 +26,9 @@
       --accent: #f5c842;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html { scroll-behavior: smooth; }
 
     body {
       background: var(--bg);
@@ -34,6 +36,7 @@
       font-family: 'DM Sans', sans-serif;
       min-height: 100vh;
       overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
     /* Animated background */
@@ -514,14 +517,179 @@
       box-shadow: 0 0 8px rgba(245,200,66,0.5);
     }
 
-    /* Responsive */
+    /* ── MOBILE QUICK NAV ── */
+    .mobile-nav {
+      display: none; /* hidden on desktop */
+      overflow-x: auto;
+      white-space: nowrap;
+      padding: 10px 12px;
+      gap: 8px;
+      background: rgba(17,19,24,0.95);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 65px; /* below header */
+      z-index: 90;
+      scrollbar-width: none; /* hide scrollbar on Firefox */
+    }
+    .mobile-nav::-webkit-scrollbar { display: none; }
+
+    .mobile-nav-item {
+      display: inline-block;
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+    }
+
+    .mobile-nav-item.active,
+    .mobile-nav-item:active {
+      background: rgba(245,200,66,0.15);
+      border-color: rgba(245,200,66,0.4);
+      color: var(--gold);
+    }
+
     @media (max-width: 768px) {
-      header { padding: 14px 16px; }
-      main { padding: 20px 16px; }
-      .sectors-wrapper { grid-template-columns: 1fr; }
-      .commodity-price { font-size: 22px; }
-      .index-value { font-size: 20px; }
-      .logo-text { font-size: 20px; }
+      .mobile-nav { display: flex; }
+      /* offset scroll anchor so sticky header + nav don't cover section titles */
+      .section-header { scroll-margin-top: 120px; }
+    }
+
+    /* ═══════════════════════════════════════════
+       RESPONSIVE — TABLET (max 1024px)
+    ═══════════════════════════════════════════ */
+    @media (max-width: 1024px) {
+      .commodities-grid { grid-template-columns: repeat(2, 1fr); }
+      .indices-grid     { grid-template-columns: repeat(3, 1fr); }
+      .currency-grid    { grid-template-columns: repeat(3, 1fr); }
+      .news-grid        { grid-template-columns: 1fr 1fr; }
+      .events-card      { grid-column: 1 / -1; }
+    }
+
+    /* ═══════════════════════════════════════════
+       RESPONSIVE — MOBILE (max 768px)
+    ═══════════════════════════════════════════ */
+    @media (max-width: 768px) {
+
+      /* ── HEADER ── */
+      header {
+        padding: 12px 16px;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .logo-icon { width: 34px; height: 34px; font-size: 17px; }
+      .logo-text { font-size: 20px; letter-spacing: 1px; }
+      .header-right { gap: 10px; }
+      .refresh-info { display: none; } /* hide on mobile to save space */
+      .clock { font-size: 12px; }
+      .live-badge { padding: 5px 10px; font-size: 11px; }
+
+      /* ── MAIN PADDING ── */
+      main { padding: 16px 12px; }
+
+      /* ── SECTION HEADERS ── */
+      .section-header { margin-top: 24px; margin-bottom: 12px; }
+      .section-title  { font-size: 16px; letter-spacing: 1px; }
+
+      /* ── COMMODITIES: 2 columns on mobile ── */
+      .commodities-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      .commodity-card   { padding: 14px 12px; border-radius: 12px; }
+      .commodity-icon   { font-size: 20px; margin-bottom: 6px; }
+      .commodity-label  { font-size: 10px; letter-spacing: 1px; margin-bottom: 3px; }
+      .commodity-name   { font-size: 12px; margin-bottom: 8px; }
+      .commodity-price  { font-size: 18px; }
+      .commodity-unit   { font-size: 10px; }
+      .commodity-change { font-size: 11px; padding: 3px 7px; margin-top: 6px; }
+
+      /* ── INDICES: 2 columns on mobile ── */
+      .indices-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      .index-card   { padding: 14px 12px; border-radius: 12px; }
+      .index-badge  { font-size: 9px; padding: 2px 6px; margin-bottom: 6px; }
+      .index-name   { font-size: 11px; margin-bottom: 6px; }
+      .index-value  { font-size: 18px; margin-bottom: 4px; }
+      .change-chip  { font-size: 11px; padding: 2px 6px; }
+
+      /* ── SECTORS: stack vertically ── */
+      .sectors-wrapper { grid-template-columns: 1fr; gap: 12px; }
+      .sector-panel-header { padding: 12px 14px; }
+      .sector-panel-title  { font-size: 14px; }
+      .sector-list  { padding: 8px; gap: 4px; }
+      .sector-item  { padding: 8px 10px; border-radius: 8px; }
+      .sector-item-name   { font-size: 12px; }
+      .sector-item-change { font-size: 11px; }
+      .sector-item-bar    { width: 40px; }
+
+      /* ── CURRENCIES: 2 columns on mobile ── */
+      .currency-note-bar { font-size: 11px; padding: 8px 12px; }
+      .currency-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      .currency-card  { padding: 12px 12px; border-radius: 12px; gap: 4px; }
+      .currency-flag  { font-size: 18px; }
+      .currency-pair  { font-size: 10px; letter-spacing: 0.8px; }
+      .currency-name  { font-size: 11px; }
+      .currency-rate  { font-size: 17px; }
+      .currency-change { font-size: 10px; padding: 2px 6px; }
+
+      /* ── NEWS: stack all cards vertically ── */
+      .news-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .events-card { grid-column: auto; }
+      .news-card-header { padding: 12px 14px; }
+      .news-card-icon   { font-size: 16px; }
+      .news-card-title  { font-size: 12px; }
+      .news-body  { padding: 12px 14px; font-size: 12px; }
+      .mood-indicator { padding: 10px 14px; }
+      .mood-label { font-size: 14px; }
+      .news-item  { padding: 8px 0; gap: 8px; }
+      .news-item-num  { width: 20px; height: 20px; font-size: 10px; }
+      .news-item-text { font-size: 12px; }
+      .news-item-tag  { font-size: 9px; padding: 1px 5px; }
+      .event-item  { gap: 8px; padding: 8px 0; }
+      .event-date  { font-size: 10px; padding: 2px 6px; }
+      .event-desc  { font-size: 12px; }
+      .event-impact { font-size: 9px; }
+
+      /* ── AI BADGE ── */
+      .ai-badge { font-size: 9px; padding: 2px 8px; }
+
+      /* ── DATA SOURCE NOTES ── */
+      .data-source-note { font-size: 10px; flex-wrap: wrap; }
+
+      /* ── FOOTER ── */
+      footer { padding: 16px 12px; font-size: 11px; margin-top: 24px; }
+
+      /* ── TOAST ── */
+      #updateToast { bottom: 12px; right: 12px; font-size: 12px; padding: 8px 14px; }
+    }
+
+    /* ═══════════════════════════════════════════
+       RESPONSIVE — SMALL PHONES (max 380px)
+    ═══════════════════════════════════════════ */
+    @media (max-width: 380px) {
+      .logo-text { font-size: 17px; }
+      .commodities-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .commodity-price  { font-size: 16px; }
+      .indices-grid     { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .index-value      { font-size: 16px; }
+      .currency-grid    { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .currency-rate    { font-size: 15px; }
+      main { padding: 12px 10px; }
     }
 
     /* Error state */
@@ -862,11 +1030,20 @@
   <!-- PROGRESS BAR -->
   <div class="progress-bar" id="progressBar" style="width:100%"></div>
 
+  <!-- MOBILE QUICK NAV -->
+  <nav class="mobile-nav" id="mobileNav">
+    <a class="mobile-nav-item active" href="#sec-commodities" onclick="setActiveNav(this)">⚡ Prices</a>
+    <a class="mobile-nav-item" href="#sec-indices"    onclick="setActiveNav(this)">📊 Indices</a>
+    <a class="mobile-nav-item" href="#sec-sectors"    onclick="setActiveNav(this)">🏭 Sectors</a>
+    <a class="mobile-nav-item" href="#sec-currencies" onclick="setActiveNav(this)">💱 Forex</a>
+    <a class="mobile-nav-item" href="#sec-news"       onclick="setActiveNav(this)">📰 News</a>
+  </nav>
+
   <!-- MAIN -->
   <main>
 
     <!-- COMMODITIES -->
-    <div class="section-header">
+    <div class="section-header" id="sec-commodities">
       <div class="section-title">⚡ Commodities</div>
       <div class="section-line"></div>
     </div>
@@ -918,7 +1095,7 @@
     </div>
 
     <!-- INDICES -->
-    <div class="section-header">
+    <div class="section-header" id="sec-indices">
       <div class="section-title">📊 Market Indices</div>
       <div class="section-line"></div>
     </div>
@@ -990,7 +1167,7 @@
     </div>
 
     <!-- SECTORS -->
-    <div class="section-header">
+    <div class="section-header" id="sec-sectors">
       <div class="section-title">🏭 Sector Performance</div>
       <div class="section-line"></div>
     </div>
@@ -1024,7 +1201,7 @@
     </div>
 
     <!-- CURRENCIES -->
-    <div class="section-header">
+    <div class="section-header" id="sec-currencies">
       <div class="section-title">💱 Currency Exchange Rates</div>
       <div class="section-line"></div>
     </div>
@@ -1053,7 +1230,7 @@
     </div>
 
     <!-- MARKET NEWS (AI Powered) -->
-    <div class="section-header">
+    <div class="section-header" id="sec-news">
       <div class="section-title">📰 Market Intelligence</div>
       <div class="section-line"></div>
       <div class="ai-badge">✨ AI</div>
@@ -1485,7 +1662,7 @@ async function fetchCurrencies() {
 // │  STEP 1: Deploy the Cloudflare Worker (see README instructions) │
 // │  STEP 2: Paste your Worker URL below replacing the placeholder  │
 // └─────────────────────────────────────────────────────────────────┘
-const WORKER_URL = 'https://market-news-proxy.vishalstore4u.workers.dev';
+const WORKER_URL = 'https://YOUR-WORKER-NAME.YOUR-CF-USERNAME.workers.dev';
 //  Example: 'https://market-news-proxy.johndoe.workers.dev'
 //  Leave as-is if not set up yet — RSS fallback will activate automatically.
 
@@ -1856,6 +2033,30 @@ async function refreshAll() {
     new Date().toLocaleTimeString('en-IN');
   showToast();
   countdown = REFRESH_INTERVAL;
+}
+
+// ═══════════════════════════════════════════
+//  MOBILE NAV — highlight active tab
+// ═══════════════════════════════════════════
+function setActiveNav(el) {
+  document.querySelectorAll('.mobile-nav-item').forEach(a => a.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// Auto-highlight nav item on scroll (mobile)
+if (window.matchMedia('(max-width: 768px)').matches) {
+  const sections = ['sec-commodities','sec-indices','sec-sectors','sec-currencies','sec-news'];
+  const navItems = document.querySelectorAll('.mobile-nav-item');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && window.scrollY >= el.offsetTop - 140) current = id;
+    });
+    navItems.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  }, { passive: true });
 }
 
 // Initial load
