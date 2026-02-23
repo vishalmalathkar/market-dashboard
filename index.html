@@ -311,6 +311,16 @@
     .change-chip.down    { background: rgba(239,68,68,0.12);   color: var(--red); }
     .change-chip.neutral { background: rgba(100,116,139,0.12); color: var(--muted); }
 
+    .index-group-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 5px;
+      padding-left: 4px;
+    }
+
     /* GAINERS / LOSERS */
     .gl-wrapper {
       display: grid;
@@ -1190,9 +1200,18 @@
       <div class="commodity-card petrol">
         <div class="commodity-icon">⛽</div>
         <div class="commodity-body">
-          <div class="commodity-top"><span class="commodity-label">Petrol · Hyd</span></div>
-          <div class="commodity-price" id="petrolPrice">₹108.20</div>
-          <div class="commodity-change neutral" id="petrolChange">Stable</div>
+          <div class="commodity-top"><span class="commodity-label">Fuel · Hyd</span></div>
+          <div style="display:flex;gap:10px;align-items:baseline;flex-wrap:wrap">
+            <div>
+              <div style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:1px">Petrol</div>
+              <div class="commodity-price" id="petrolPrice">₹108.20</div>
+            </div>
+            <div>
+              <div style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:1px">Diesel</div>
+              <div class="commodity-price" id="dieselPrice">₹94.62</div>
+            </div>
+          </div>
+          <div class="commodity-change neutral" id="petrolChange">Stable · /litre</div>
         </div>
       </div>
     </div>
@@ -1207,21 +1226,9 @@
       <div class="section-line"></div>
     </div>
 
+    <!-- GROUP 1: Main Indices -->
+    <div class="index-group-label">Core Indices</div>
     <div class="indices-grid">
-      <div class="index-card gift">
-        <div class="index-left">
-          <div class="index-badge">GIFT Nifty</div>
-          <div class="index-name">GIFT City SGX</div>
-        </div>
-        <div class="index-right">
-          <div class="index-value loading" id="giftNiftyVal">—</div>
-          <div class="index-change-row">
-            <div class="change-chip neutral" id="giftNiftyChange">—</div>
-            <div class="change-chip neutral" id="giftNiftyPct">—</div>
-          </div>
-        </div>
-      </div>
-
       <div class="index-card nifty50">
         <div class="index-left">
           <div class="index-badge">Nifty 50</div>
@@ -1232,6 +1239,20 @@
           <div class="index-change-row">
             <div class="change-chip neutral" id="nifty50Change">—</div>
             <div class="change-chip neutral" id="nifty50Pct">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="index-card banknifty">
+        <div class="index-left">
+          <div class="index-badge">Bank Nifty</div>
+          <div class="index-name">Nifty Bank</div>
+        </div>
+        <div class="index-right">
+          <div class="index-value loading" id="bankniftyVal">—</div>
+          <div class="index-change-row">
+            <div class="change-chip neutral" id="bankniftyChange">—</div>
+            <div class="change-chip neutral" id="bankniftyPct">—</div>
           </div>
         </div>
       </div>
@@ -1249,7 +1270,11 @@
           </div>
         </div>
       </div>
+    </div>
 
+    <!-- GROUP 2: Broader Market -->
+    <div class="index-group-label" style="margin-top:10px">Broader Market</div>
+    <div class="indices-grid">
       <div class="index-card smallcap">
         <div class="index-left">
           <div class="index-badge">Smallcap 100</div>
@@ -1278,16 +1303,16 @@
         </div>
       </div>
 
-      <div class="index-card banknifty">
+      <div class="index-card gift">
         <div class="index-left">
-          <div class="index-badge">Bank Nifty</div>
-          <div class="index-name">Nifty Bank</div>
+          <div class="index-badge">GIFT Nifty</div>
+          <div class="index-name">GIFT City SGX</div>
         </div>
         <div class="index-right">
-          <div class="index-value loading" id="bankniftyVal">—</div>
+          <div class="index-value loading" id="giftNiftyVal">—</div>
           <div class="index-change-row">
-            <div class="change-chip neutral" id="bankniftyChange">—</div>
-            <div class="change-chip neutral" id="bankniftyPct">—</div>
+            <div class="change-chip neutral" id="giftNiftyChange">—</div>
+            <div class="change-chip neutral" id="giftNiftyPct">—</div>
           </div>
         </div>
       </div>
@@ -1743,14 +1768,27 @@ async function fetchGIFTNifty() {
   }
 }
 
+// Fetch Midcap 100 with multiple ticker fallbacks
+async function fetchMidcap() {
+  // Yahoo Finance has inconsistent naming for this index — try all known variants
+  const tickers = ['^NIFTY_MIDCAP_100', '^CNXMC', 'NIFTYMIDCAP100.NS', '^NIFMID50'];
+  for (const t of tickers) {
+    const r = await fetchIndex(t, 'midcapVal', 'midcapChange', 'midcapPct');
+    if (r) return r;
+  }
+  // Last resort: estimate from Nifty50 as a rough proxy note
+  const el = document.getElementById('midcapVal');
+  if (el) { el.textContent = 'N/A'; el.classList.remove('loading'); }
+}
+
 async function fetchAllIndices() {
   await Promise.all([
     fetchGIFTNifty(),
-    fetchIndex('^NSEI',             'nifty50Val',  'nifty50Change',  'nifty50Pct'),
-    fetchIndex('^BSESN',            'bseVal',      'bseChange',      'bsePct'),
-    fetchIndex('^CNXSC',            'smallcapVal', 'smallcapChange', 'smallcapPct'),
-    fetchIndex('^NIFTY_MIDCAP_100', 'midcapVal',   'midcapChange',   'midcapPct'),
-    fetchIndex('^NSEBANK',          'bankniftyVal','bankniftyChange','bankniftyPct'),
+    fetchIndex('^NSEI',    'nifty50Val',  'nifty50Change',  'nifty50Pct'),
+    fetchIndex('^BSESN',   'bseVal',      'bseChange',      'bsePct'),
+    fetchIndex('^CNXSC',   'smallcapVal', 'smallcapChange', 'smallcapPct'),
+    fetchMidcap(),
+    fetchIndex('^NSEBANK', 'bankniftyVal','bankniftyChange','bankniftyPct'),
   ]);
 }
 
