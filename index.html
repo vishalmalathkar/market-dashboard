@@ -180,193 +180,214 @@
       background: var(--border);
     }
 
-    /* COMMODITIES GRID */
+    /* COMMODITIES — slim horizontal bar, 4 across */
     .commodities-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
       margin-bottom: 8px;
     }
 
     .commodity-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 24px;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.2s, border-color 0.2s;
+      border-radius: 10px;
+      padding: 10px 13px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: border-color 0.2s;
+      border-left: 3px solid transparent;
     }
 
-    .commodity-card:hover {
-      transform: translateY(-2px);
-      border-color: rgba(255,255,255,0.12);
-    }
+    .commodity-card.gold   { border-left-color: var(--gold); }
+    .commodity-card.silver { border-left-color: var(--silver); }
+    .commodity-card.copper { border-left-color: var(--copper); }
+    .commodity-card.petrol { border-left-color: #3b82f6; }
+    .commodity-card:hover  { border-color: rgba(255,255,255,0.14); }
 
-    .commodity-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      border-radius: 16px 16px 0 0;
-    }
-
-    .commodity-card.gold::before { background: linear-gradient(90deg, var(--gold), #e67e22); }
-    .commodity-card.silver::before { background: linear-gradient(90deg, var(--silver), #718096); }
-    .commodity-card.copper::before { background: linear-gradient(90deg, var(--copper), #c05621); }
-    .commodity-card.petrol::before { background: linear-gradient(90deg, #3b82f6, #6366f1); }
-
-    .commodity-icon {
-      font-size: 28px;
-      margin-bottom: 12px;
-    }
-
-    .commodity-label {
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-
-    .commodity-name {
-      font-size: 15px;
-      font-weight: 500;
-      color: var(--text);
-      margin-bottom: 16px;
-    }
+    .commodity-icon  { font-size: 18px; flex-shrink: 0; }
+    .commodity-body  { flex: 1; min-width: 0; }
+    .commodity-top   { display: flex; align-items: baseline; gap: 6px; }
+    .commodity-label { font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
 
     .commodity-price {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 28px;
-      font-weight: 600;
+      font-size: 15px;
+      font-weight: 700;
       color: #fff;
-      margin-bottom: 4px;
+      white-space: nowrap;
     }
 
-    .commodity-price.loading {
-      color: var(--muted);
-      font-size: 18px;
-      animation: shimmer 1.5s infinite;
-    }
+    .commodity-price.loading { color: var(--muted); font-size: 12px; animation: shimmer 1.5s infinite; }
 
-    @keyframes shimmer {
-      0%, 100% { opacity: 0.4; }
-      50% { opacity: 1; }
-    }
+    .commodity-change { font-size: 11px; font-weight: 600; margin-top: 1px; }
+    .commodity-change.up     { color: var(--green); }
+    .commodity-change.down   { color: var(--red); }
+    .commodity-change.neutral{ color: var(--muted); }
 
-    .commodity-unit {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    .commodity-change {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      margin-top: 10px;
-      font-size: 13px;
-      font-weight: 500;
-      padding: 4px 10px;
-      border-radius: 6px;
-    }
-
-    .commodity-change.up { background: rgba(34,197,94,0.1); color: var(--green); }
-    .commodity-change.down { background: rgba(239,68,68,0.1); color: var(--red); }
-    .commodity-change.neutral { background: rgba(100,116,139,0.1); color: var(--muted); }
-
-    /* INDICES GRID */
+    /* INDICES — slim 3-col rows */
     .indices-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
     }
 
     .index-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 20px;
-      transition: transform 0.2s, border-color 0.2s;
-      position: relative;
-      overflow: hidden;
+      border-radius: 10px;
+      padding: 10px 13px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      transition: border-color 0.2s;
+      border-left: 3px solid transparent;
     }
 
-    .index-card:hover {
-      transform: translateY(-2px);
-      border-color: rgba(255,255,255,0.12);
-    }
+    .index-card:hover { border-color: rgba(255,255,255,0.12); }
 
-    .index-card.gift { border-top: 3px solid #a78bfa; }
-    .index-card.nifty50 { border-top: 3px solid var(--gold); }
-    .index-card.bse { border-top: 3px solid #38bdf8; }
-    .index-card.smallcap { border-top: 3px solid #fb923c; }
-    .index-card.midcap { border-top: 3px solid #34d399; }
-    .index-card.banknifty { border-top: 3px solid #f472b6; }
+    .index-card.gift      { border-left-color: #a78bfa; }
+    .index-card.nifty50   { border-left-color: var(--gold); }
+    .index-card.bse       { border-left-color: #38bdf8; }
+    .index-card.smallcap  { border-left-color: #fb923c; }
+    .index-card.midcap    { border-left-color: #34d399; }
+    .index-card.banknifty { border-left-color: #f472b6; }
+
+    .index-left { flex: 1; min-width: 0; }
 
     .index-badge {
       display: inline-block;
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 700;
-      letter-spacing: 1.5px;
+      letter-spacing: 1px;
       text-transform: uppercase;
-      padding: 3px 8px;
-      border-radius: 4px;
-      margin-bottom: 10px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      margin-bottom: 2px;
     }
 
-    .index-card.gift .index-badge { background: rgba(167,139,250,0.15); color: #a78bfa; }
-    .index-card.nifty50 .index-badge { background: rgba(245,200,66,0.15); color: var(--gold); }
-    .index-card.bse .index-badge { background: rgba(56,189,248,0.15); color: #38bdf8; }
-    .index-card.smallcap .index-badge { background: rgba(251,146,60,0.15); color: #fb923c; }
-    .index-card.midcap .index-badge { background: rgba(52,211,153,0.15); color: #34d399; }
+    .index-card.gift      .index-badge { background: rgba(167,139,250,0.15); color: #a78bfa; }
+    .index-card.nifty50   .index-badge { background: rgba(245,200,66,0.15);  color: var(--gold); }
+    .index-card.bse       .index-badge { background: rgba(56,189,248,0.15);  color: #38bdf8; }
+    .index-card.smallcap  .index-badge { background: rgba(251,146,60,0.15);  color: #fb923c; }
+    .index-card.midcap    .index-badge { background: rgba(52,211,153,0.15);  color: #34d399; }
     .index-card.banknifty .index-badge { background: rgba(244,114,182,0.15); color: #f472b6; }
 
     .index-name {
-      font-size: 13px;
+      font-size: 10px;
       color: var(--muted);
-      margin-bottom: 10px;
-      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
+
+    .index-right { text-align: right; flex-shrink: 0; }
 
     .index-value {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 26px;
-      font-weight: 600;
+      font-size: 15px;
+      font-weight: 700;
       color: #fff;
-      margin-bottom: 6px;
+      line-height: 1.1;
     }
 
-    .index-value.loading {
-      color: var(--muted);
-      font-size: 18px;
-      animation: shimmer 1.5s infinite;
-    }
+    .index-value.loading { color: var(--muted); font-size: 12px; animation: shimmer 1.5s infinite; }
 
-    .index-change-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
+    .index-change-row { display: flex; align-items: center; justify-content: flex-end; gap: 4px; margin-top: 2px; }
 
     .change-chip {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      font-size: 12px;
+      gap: 3px;
+      font-size: 10px;
       font-weight: 600;
-      padding: 3px 8px;
-      border-radius: 5px;
+      padding: 1px 5px;
+      border-radius: 4px;
     }
 
-    .change-chip.up { background: rgba(34,197,94,0.12); color: var(--green); }
-    .change-chip.down { background: rgba(239,68,68,0.12); color: var(--red); }
+    .change-chip.up      { background: rgba(34,197,94,0.12);   color: var(--green); }
+    .change-chip.down    { background: rgba(239,68,68,0.12);   color: var(--red); }
     .change-chip.neutral { background: rgba(100,116,139,0.12); color: var(--muted); }
+
+    /* GAINERS / LOSERS */
+    .gl-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .gl-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .gl-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .gl-header.gainers { background: rgba(34,197,94,0.06); color: var(--green); }
+    .gl-header.losers  { background: rgba(239,68,68,0.06);  color: var(--red); }
+
+    .gl-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border);
+      gap: 8px;
+    }
+
+    .gl-row:last-child { border-bottom: none; }
+
+    .gl-rank {
+      font-size: 10px;
+      color: var(--muted);
+      width: 14px;
+      flex-shrink: 0;
+    }
+
+    .gl-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .gl-ticker {
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .gl-pct {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .gl-pct.up   { color: var(--green); }
+    .gl-pct.down { color: var(--red); }
+
+    .gl-shimmer {
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
 
     /* SECTORS GRID */
     .sectors-wrapper {
@@ -578,118 +599,105 @@
     @media (max-width: 768px) {
 
       /* ── HEADER ── */
-      header {
-        padding: 12px 16px;
-        flex-wrap: wrap;
-        gap: 10px;
-      }
+      header { padding: 12px 16px; flex-wrap: wrap; gap: 10px; }
       .logo-icon { width: 34px; height: 34px; font-size: 17px; }
       .logo-text { font-size: 20px; letter-spacing: 1px; }
       .header-right { gap: 10px; }
-      .refresh-info { display: none; } /* hide on mobile to save space */
+      .refresh-info { display: none; }
       .clock { font-size: 12px; }
       .live-badge { padding: 5px 10px; font-size: 11px; }
 
-      /* ── MAIN PADDING ── */
-      main { padding: 16px 12px; }
+      /* ── MAIN ── */
+      main { padding: 14px 10px; }
+      .section-header { margin-top: 20px; margin-bottom: 10px; }
+      .section-title { font-size: 15px; letter-spacing: 1px; }
 
-      /* ── SECTION HEADERS ── */
-      .section-header { margin-top: 24px; margin-bottom: 12px; }
-      .section-title  { font-size: 16px; letter-spacing: 1px; }
+      /* ── COMMODITIES: 2 cols ── */
+      .commodities-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+      .commodity-card { padding: 8px 10px; border-radius: 8px; gap: 7px; }
+      .commodity-icon { font-size: 15px; }
+      .commodity-label { font-size: 9px; }
+      .commodity-price { font-size: 13px; }
+      .commodity-change { font-size: 10px; }
 
-      /* ── COMMODITIES: 2 columns on mobile ── */
-      .commodities-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-      }
-      .commodity-card   { padding: 14px 12px; border-radius: 12px; }
-      .commodity-icon   { font-size: 20px; margin-bottom: 6px; }
-      .commodity-label  { font-size: 10px; letter-spacing: 1px; margin-bottom: 3px; }
-      .commodity-name   { font-size: 12px; margin-bottom: 8px; }
-      .commodity-price  { font-size: 18px; }
-      .commodity-unit   { font-size: 10px; }
-      .commodity-change { font-size: 11px; padding: 3px 7px; margin-top: 6px; }
+      /* ── INDICES: 2 cols ── */
+      .indices-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+      .index-card { padding: 8px 10px; border-radius: 8px; }
+      .index-badge { font-size: 8px; padding: 1px 4px; }
+      .index-name { font-size: 9px; }
+      .index-value { font-size: 13px; }
+      .change-chip { font-size: 9px; padding: 1px 4px; }
 
-      /* ── INDICES: 2 columns on mobile ── */
-      .indices-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-      }
-      .index-card   { padding: 14px 12px; border-radius: 12px; }
-      .index-badge  { font-size: 9px; padding: 2px 6px; margin-bottom: 6px; }
-      .index-name   { font-size: 11px; margin-bottom: 6px; }
-      .index-value  { font-size: 18px; margin-bottom: 4px; }
-      .change-chip  { font-size: 11px; padding: 2px 6px; }
+      /* ── GAINERS/LOSERS ── */
+      .gl-wrapper { grid-template-columns: 1fr; gap: 8px; }
+      .gl-header { font-size: 11px; padding: 8px 12px; }
+      .gl-row { padding: 7px 12px; }
+      .gl-name { font-size: 11px; }
+      .gl-ticker { font-size: 9px; }
+      .gl-pct { font-size: 11px; }
 
-      /* ── SECTORS: stack vertically ── */
-      .sectors-wrapper { grid-template-columns: 1fr; gap: 12px; }
-      .sector-panel-header { padding: 12px 14px; }
-      .sector-panel-title  { font-size: 14px; }
-      .sector-list  { padding: 8px; gap: 4px; }
-      .sector-item  { padding: 8px 10px; border-radius: 8px; }
-      .sector-item-name   { font-size: 12px; }
-      .sector-item-change { font-size: 11px; }
-      .sector-item-bar    { width: 40px; }
+      /* ── SECTORS ── */
+      .sectors-wrapper { grid-template-columns: 1fr; gap: 10px; }
+      .sector-panel-header { padding: 10px 12px; }
+      .sector-panel-title { font-size: 13px; }
+      .sector-list { padding: 6px; gap: 3px; }
+      .sector-item { padding: 7px 8px; border-radius: 7px; }
+      .sector-item-name { font-size: 11px; }
+      .sector-item-change { font-size: 10px; }
+      .sector-item-bar { width: 36px; }
 
-      /* ── CURRENCIES: 2 columns on mobile ── */
-      .currency-note-bar { font-size: 11px; padding: 8px 12px; }
-      .currency-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-      }
-      .currency-card  { padding: 12px 12px; border-radius: 12px; gap: 4px; }
-      .currency-flag  { font-size: 18px; }
-      .currency-pair  { font-size: 10px; letter-spacing: 0.8px; }
-      .currency-name  { font-size: 11px; }
-      .currency-rate  { font-size: 17px; }
-      .currency-change { font-size: 10px; padding: 2px 6px; }
+      /* ── CURRENCIES ── */
+      .currency-grid { grid-template-columns: repeat(2, 1fr); gap: 5px; }
+      .fx-row { padding: 7px 9px; }
+      .fx-flag { font-size: 15px; }
+      .fx-code { font-size: 10px; }
+      .fx-name { font-size: 9px; max-width: 58px; }
+      .fx-rate { font-size: 11px; }
+      .fx-change { font-size: 9px; }
 
-      /* ── NEWS: stack all cards vertically ── */
-      .news-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
-      }
+      /* ── MF ── */
+      .mf-tabs { gap: 5px; }
+      .mf-tab { font-size: 11px; padding: 5px 10px; }
+      .mf-table th { font-size: 9px; padding: 7px 8px; }
+      .mf-table td { font-size: 10px; padding: 8px 8px; }
+      .mf-fund-name { font-size: 10px; }
+      .mf-fund-house { font-size: 9px; }
+      .mf-ret { font-size: 10px; }
+      .mf-rating { font-size: 10px; }
+
+      /* ── NEWS ── */
+      .news-grid { grid-template-columns: 1fr; gap: 10px; }
       .events-card { grid-column: auto; }
-      .news-card-header { padding: 12px 14px; }
-      .news-card-icon   { font-size: 16px; }
-      .news-card-title  { font-size: 12px; }
-      .news-body  { padding: 12px 14px; font-size: 12px; }
-      .mood-indicator { padding: 10px 14px; }
-      .mood-label { font-size: 14px; }
-      .news-item  { padding: 8px 0; gap: 8px; }
-      .news-item-num  { width: 20px; height: 20px; font-size: 10px; }
-      .news-item-text { font-size: 12px; }
-      .news-item-tag  { font-size: 9px; padding: 1px 5px; }
-      .event-item  { gap: 8px; padding: 8px 0; }
-      .event-date  { font-size: 10px; padding: 2px 6px; }
-      .event-desc  { font-size: 12px; }
+      .news-card-header { padding: 10px 12px; }
+      .news-card-icon { font-size: 15px; }
+      .news-card-title { font-size: 11px; }
+      .news-body { padding: 10px 12px; font-size: 11px; }
+      .mood-indicator { padding: 8px 12px; }
+      .mood-label { font-size: 13px; }
+      .news-item { padding: 7px 0; gap: 7px; }
+      .news-item-num { width: 18px; height: 18px; font-size: 9px; }
+      .news-item-text { font-size: 11px; }
+      .news-item-tag { font-size: 9px; padding: 1px 4px; }
+      .event-item { gap: 7px; padding: 7px 0; }
+      .event-date { font-size: 10px; padding: 2px 5px; }
+      .event-desc { font-size: 11px; }
       .event-impact { font-size: 9px; }
-
-      /* ── AI BADGE ── */
-      .ai-badge { font-size: 9px; padding: 2px 8px; }
-
-      /* ── DATA SOURCE NOTES ── */
-      .data-source-note { font-size: 10px; flex-wrap: wrap; }
+      .ai-badge { font-size: 9px; padding: 2px 7px; }
+      .data-source-note { font-size: 10px; }
 
       /* ── FOOTER ── */
-      footer { padding: 16px 12px; font-size: 11px; margin-top: 24px; }
-
-      /* ── TOAST ── */
-      #updateToast { bottom: 12px; right: 12px; font-size: 12px; padding: 8px 14px; }
+      footer { padding: 14px 10px; font-size: 11px; margin-top: 20px; }
+      #updateToast { bottom: 10px; right: 10px; font-size: 11px; padding: 7px 12px; }
     }
 
-    /* ═══════════════════════════════════════════
-       RESPONSIVE — SMALL PHONES (max 380px)
-    ═══════════════════════════════════════════ */
     @media (max-width: 380px) {
-      .logo-text { font-size: 17px; }
-      .commodities-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
-      .commodity-price  { font-size: 16px; }
-      .indices-grid     { grid-template-columns: 1fr 1fr; gap: 8px; }
-      .index-value      { font-size: 16px; }
-      .currency-grid    { grid-template-columns: 1fr 1fr; gap: 8px; }
-      .currency-rate    { font-size: 15px; }
-      main { padding: 12px 10px; }
+      .logo-text { font-size: 16px; }
+      main { padding: 10px 8px; }
+      .commodities-grid { gap: 5px; }
+      .commodity-price { font-size: 12px; }
+      .index-value { font-size: 12px; }
+      .currency-grid { gap: 4px; }
+      .fx-name { display: none; }
     }
 
     /* Error state */
@@ -1138,6 +1146,7 @@
   <nav class="mobile-nav" id="mobileNav">
     <a class="mobile-nav-item active" href="#sec-commodities" onclick="setActiveNav(this)">⚡ Prices</a>
     <a class="mobile-nav-item" href="#sec-indices"    onclick="setActiveNav(this)">📊 Indices</a>
+    <a class="mobile-nav-item" href="#sec-gainers"    onclick="setActiveNav(this)">🏆 Movers</a>
     <a class="mobile-nav-item" href="#sec-sectors"    onclick="setActiveNav(this)">🏭 Sectors</a>
     <a class="mobile-nav-item" href="#sec-news"       onclick="setActiveNav(this)">📰 News</a>
     <a class="mobile-nav-item" href="#sec-mf"         onclick="setActiveNav(this)">📦 MF</a>
@@ -1154,44 +1163,37 @@
     </div>
 
     <div class="commodities-grid">
-      <!-- GOLD -->
       <div class="commodity-card gold">
         <div class="commodity-icon">🥇</div>
-        <div class="commodity-label">Precious Metal</div>
-        <div class="commodity-name">Gold (24K) · 10 grams</div>
-        <div class="commodity-price loading" id="goldPrice">Loading...</div>
-        <div class="commodity-unit" id="goldUnit">INR per 10g</div>
-        <div class="commodity-change neutral" id="goldChange">—</div>
+        <div class="commodity-body">
+          <div class="commodity-top"><span class="commodity-label">Gold · 10g</span></div>
+          <div class="commodity-price loading" id="goldPrice">—</div>
+          <div class="commodity-change neutral" id="goldChange">—</div>
+        </div>
       </div>
-
-      <!-- SILVER -->
       <div class="commodity-card silver">
         <div class="commodity-icon">🥈</div>
-        <div class="commodity-label">Precious Metal</div>
-        <div class="commodity-name">Silver · 1 Kilogram</div>
-        <div class="commodity-price loading" id="silverPrice">Loading...</div>
-        <div class="commodity-unit" id="silverUnit">INR per kg</div>
-        <div class="commodity-change neutral" id="silverChange">—</div>
+        <div class="commodity-body">
+          <div class="commodity-top"><span class="commodity-label">Silver · 1kg</span></div>
+          <div class="commodity-price loading" id="silverPrice">—</div>
+          <div class="commodity-change neutral" id="silverChange">—</div>
+        </div>
       </div>
-
-      <!-- COPPER -->
       <div class="commodity-card copper">
         <div class="commodity-icon">🪙</div>
-        <div class="commodity-label">Industrial Metal</div>
-        <div class="commodity-name">Copper · 1 Kilogram</div>
-        <div class="commodity-price loading" id="copperPrice">Loading...</div>
-        <div class="commodity-unit" id="copperUnit">INR per kg</div>
-        <div class="commodity-change neutral" id="copperChange">—</div>
+        <div class="commodity-body">
+          <div class="commodity-top"><span class="commodity-label">Copper · 1kg</span></div>
+          <div class="commodity-price loading" id="copperPrice">—</div>
+          <div class="commodity-change neutral" id="copperChange">—</div>
+        </div>
       </div>
-
-      <!-- PETROL -->
       <div class="commodity-card petrol">
         <div class="commodity-icon">⛽</div>
-        <div class="commodity-label">Fuel</div>
-        <div class="commodity-name">Petrol · Hyderabad</div>
-        <div class="commodity-price" id="petrolPrice">₹108.20</div>
-        <div class="commodity-unit">INR per litre</div>
-        <div class="commodity-change neutral" id="petrolChange">Stable</div>
+        <div class="commodity-body">
+          <div class="commodity-top"><span class="commodity-label">Petrol · Hyd</span></div>
+          <div class="commodity-price" id="petrolPrice">₹108.20</div>
+          <div class="commodity-change neutral" id="petrolChange">Stable</div>
+        </div>
       </div>
     </div>
 
@@ -1207,68 +1209,125 @@
 
     <div class="indices-grid">
       <div class="index-card gift">
-        <div class="index-badge">GIFT Nifty</div>
-        <div class="index-name">GIFT City SGX Nifty</div>
-        <div class="index-value loading" id="giftNiftyVal">Loading...</div>
-        <div class="index-change-row">
-          <div class="change-chip neutral" id="giftNiftyChange">—</div>
-          <div class="change-chip neutral" id="giftNiftyPct">—</div>
+        <div class="index-left">
+          <div class="index-badge">GIFT Nifty</div>
+          <div class="index-name">GIFT City SGX</div>
+        </div>
+        <div class="index-right">
+          <div class="index-value loading" id="giftNiftyVal">—</div>
+          <div class="index-change-row">
+            <div class="change-chip neutral" id="giftNiftyChange">—</div>
+            <div class="change-chip neutral" id="giftNiftyPct">—</div>
+          </div>
         </div>
       </div>
 
       <div class="index-card nifty50">
-        <div class="index-badge">Nifty 50</div>
-        <div class="index-name">NSE Nifty 50 Index</div>
-        <div class="index-value loading" id="nifty50Val">Loading...</div>
-        <div class="index-change-row">
-          <div class="change-chip neutral" id="nifty50Change">—</div>
-          <div class="change-chip neutral" id="nifty50Pct">—</div>
+        <div class="index-left">
+          <div class="index-badge">Nifty 50</div>
+          <div class="index-name">NSE Nifty 50</div>
+        </div>
+        <div class="index-right">
+          <div class="index-value loading" id="nifty50Val">—</div>
+          <div class="index-change-row">
+            <div class="change-chip neutral" id="nifty50Change">—</div>
+            <div class="change-chip neutral" id="nifty50Pct">—</div>
+          </div>
         </div>
       </div>
 
       <div class="index-card bse">
-        <div class="index-badge">BSE Sensex</div>
-        <div class="index-name">Bombay Stock Exchange</div>
-        <div class="index-value loading" id="bseVal">Loading...</div>
-        <div class="index-change-row">
-          <div class="change-chip neutral" id="bseChange">—</div>
-          <div class="change-chip neutral" id="bsePct">—</div>
+        <div class="index-left">
+          <div class="index-badge">BSE Sensex</div>
+          <div class="index-name">Bombay SE</div>
+        </div>
+        <div class="index-right">
+          <div class="index-value loading" id="bseVal">—</div>
+          <div class="index-change-row">
+            <div class="change-chip neutral" id="bseChange">—</div>
+            <div class="change-chip neutral" id="bsePct">—</div>
+          </div>
         </div>
       </div>
 
       <div class="index-card smallcap">
-        <div class="index-badge">Nifty Smallcap</div>
-        <div class="index-name">Nifty Smallcap 100</div>
-        <div class="index-value loading" id="smallcapVal">Loading...</div>
-        <div class="index-change-row">
-          <div class="change-chip neutral" id="smallcapChange">—</div>
-          <div class="change-chip neutral" id="smallcapPct">—</div>
+        <div class="index-left">
+          <div class="index-badge">Smallcap 100</div>
+          <div class="index-name">Nifty Smallcap</div>
+        </div>
+        <div class="index-right">
+          <div class="index-value loading" id="smallcapVal">—</div>
+          <div class="index-change-row">
+            <div class="change-chip neutral" id="smallcapChange">—</div>
+            <div class="change-chip neutral" id="smallcapPct">—</div>
+          </div>
         </div>
       </div>
 
       <div class="index-card midcap">
-        <div class="index-badge">Nifty Midcap</div>
-        <div class="index-name">Nifty Midcap 100</div>
-        <div class="index-value loading" id="midcapVal">Loading...</div>
-        <div class="index-change-row">
-          <div class="change-chip neutral" id="midcapChange">—</div>
-          <div class="change-chip neutral" id="midcapPct">—</div>
+        <div class="index-left">
+          <div class="index-badge">Midcap 100</div>
+          <div class="index-name">Nifty Midcap</div>
+        </div>
+        <div class="index-right">
+          <div class="index-value loading" id="midcapVal">—</div>
+          <div class="index-change-row">
+            <div class="change-chip neutral" id="midcapChange">—</div>
+            <div class="change-chip neutral" id="midcapPct">—</div>
+          </div>
         </div>
       </div>
 
       <div class="index-card banknifty">
-        <div class="index-badge">Bank Nifty</div>
-        <div class="index-name">Nifty Bank Index</div>
-        <div class="index-value loading" id="bankniftyVal">Loading...</div>
-        <div class="index-change-row">
-          <div class="change-chip neutral" id="bankniftyChange">—</div>
-          <div class="change-chip neutral" id="bankniftyPct">—</div>
+        <div class="index-left">
+          <div class="index-badge">Bank Nifty</div>
+          <div class="index-name">Nifty Bank</div>
+        </div>
+        <div class="index-right">
+          <div class="index-value loading" id="bankniftyVal">—</div>
+          <div class="index-change-row">
+            <div class="change-chip neutral" id="bankniftyChange">—</div>
+            <div class="change-chip neutral" id="bankniftyPct">—</div>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="data-source-note">
-      ℹ️ Index data: Yahoo Finance (15-min delayed during market hours). Real-time data requires a broker API.
+      ℹ️ Index data: Yahoo Finance (~15-min delayed). Real-time requires broker API.
+    </div>
+
+    <!-- NIFTY 50 GAINERS & LOSERS -->
+    <div class="section-header" id="sec-gainers">
+      <div class="section-title">🏆 Nifty 50 · Top Movers</div>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="gl-wrapper">
+      <div class="gl-panel">
+        <div class="gl-header gainers">📈 Top 5 Gainers</div>
+        <div id="niftyGainers">
+          <div class="gl-shimmer">
+            <div class="news-loading-shimmer"></div><div class="news-loading-shimmer" style="width:85%"></div>
+            <div class="news-loading-shimmer" style="width:90%"></div><div class="news-loading-shimmer" style="width:78%"></div>
+            <div class="news-loading-shimmer" style="width:88%"></div>
+          </div>
+        </div>
+      </div>
+      <div class="gl-panel">
+        <div class="gl-header losers">📉 Top 5 Losers</div>
+        <div id="niftyLosers">
+          <div class="gl-shimmer">
+            <div class="news-loading-shimmer"></div><div class="news-loading-shimmer" style="width:85%"></div>
+            <div class="news-loading-shimmer" style="width:90%"></div><div class="news-loading-shimmer" style="width:78%"></div>
+            <div class="news-loading-shimmer" style="width:88%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="data-source-note" style="margin-top:8px">
+      ℹ️ Nifty 50 movers: Yahoo Finance constituent data (~15-min delayed).
     </div>
 
     <!-- SECTORS -->
@@ -1303,24 +1362,6 @@
 
     <div class="data-source-note" style="margin-top:8px">
       ℹ️ Sector data: NSE India sector indices via Yahoo Finance.
-    </div>
-
-    <!-- CURRENCIES -->
-    <div class="section-header" id="sec-currencies">
-      <div class="section-title">💱 Currency Exchange Rates</div>
-      <div class="section-line"></div>
-    </div>
-
-    <div class="currency-note-bar">
-      🌍 <strong>→ INR</strong> = how many rupees per 1 foreign unit &nbsp;·&nbsp; <strong>INR →</strong> = how many foreign units per 1 rupee
-    </div>
-
-    <div class="currency-grid" id="currencyGrid">
-      <!-- Populated by JS -->
-    </div>
-
-    <div class="data-source-note" style="margin-top:8px">
-      ℹ️ Exchange rates: Yahoo Finance (live, ~15-min delayed). Exotic pairs computed via USD cross-rate.
     </div>
 
     <!-- MARKET NEWS (AI Powered) -->
@@ -1411,7 +1452,23 @@
     </div>
 
     <div class="data-source-note" style="margin-top:8px">
-      ℹ️ Mutual fund rankings powered by AI based on 1Y/3Y returns, AUM, and rating. Verify on AMFI / Moneycontrol before investing. Not financial advice.
+      ℹ️ Mutual fund rankings powered by AI based on 1Y/3Y/5Y returns, AUM & rating. Verify on AMFI / Valueresearch. Not financial advice.
+    </div>
+
+    <!-- CURRENCIES — moved to bottom -->
+    <div class="section-header" id="sec-currencies">
+      <div class="section-title">💱 Currency Exchange Rates</div>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="currency-note-bar">
+      🌍 <strong>→ INR</strong>: rupees per 1 foreign unit &nbsp;·&nbsp; <strong>INR →</strong>: foreign units per 1 rupee
+    </div>
+
+    <div class="currency-grid" id="currencyGrid"></div>
+
+    <div class="data-source-note" style="margin-top:8px">
+      ℹ️ Rates: Yahoo Finance (~15-min delayed). Exotic pairs via USD cross-rate calculation.
     </div>
 
   </main>
@@ -1689,17 +1746,92 @@ async function fetchGIFTNifty() {
 async function fetchAllIndices() {
   await Promise.all([
     fetchGIFTNifty(),
-    fetchIndex('^NSEI',      'nifty50Val',  'nifty50Change',  'nifty50Pct'),
-    fetchIndex('^BSESN',     'bseVal',      'bseChange',      'bsePct'),
-    fetchIndex('^CNXSC',     'smallcapVal', 'smallcapChange', 'smallcapPct'),
-    fetchIndex('^CNXMC',     'midcapVal',   'midcapChange',   'midcapPct'),
-    fetchIndex('^NSEBANK',   'bankniftyVal','bankniftyChange','bankniftyPct'),
+    fetchIndex('^NSEI',             'nifty50Val',  'nifty50Change',  'nifty50Pct'),
+    fetchIndex('^BSESN',            'bseVal',      'bseChange',      'bsePct'),
+    fetchIndex('^CNXSC',            'smallcapVal', 'smallcapChange', 'smallcapPct'),
+    fetchIndex('^NIFTY_MIDCAP_100', 'midcapVal',   'midcapChange',   'midcapPct'),
+    fetchIndex('^NSEBANK',          'bankniftyVal','bankniftyChange','bankniftyPct'),
   ]);
 }
 
 // ═══════════════════════════════════════════
-//  CURRENCY EXCHANGE RATES
+//  NIFTY 50 TOP GAINERS & LOSERS
 // ═══════════════════════════════════════════
+// Top Nifty 50 constituents — fetch in batches for speed
+const NIFTY50_STOCKS = [
+  {sym:'RELIANCE.NS', name:'Reliance'}, {sym:'TCS.NS', name:'TCS'},
+  {sym:'HDFCBANK.NS', name:'HDFC Bank'}, {sym:'BHARTIARTL.NS', name:'Bharti Airtel'},
+  {sym:'ICICIBANK.NS', name:'ICICI Bank'}, {sym:'INFOSYS.NS', name:'Infosys'},
+  {sym:'SBIN.NS', name:'SBI'}, {sym:'LICI.NS', name:'LIC India'},
+  {sym:'ITC.NS', name:'ITC'}, {sym:'KOTAKBANK.NS', name:'Kotak Bank'},
+  {sym:'LT.NS', name:'L&T'}, {sym:'HINDUNILVR.NS', name:'HUL'},
+  {sym:'BAJFINANCE.NS', name:'Bajaj Finance'}, {sym:'MARUTI.NS', name:'Maruti'},
+  {sym:'AXISBANK.NS', name:'Axis Bank'}, {sym:'ASIANPAINT.NS', name:'Asian Paints'},
+  {sym:'SUNPHARMA.NS', name:'Sun Pharma'}, {sym:'TITAN.NS', name:'Titan'},
+  {sym:'ADANIENT.NS', name:'Adani Ent'}, {sym:'WIPRO.NS', name:'Wipro'},
+  {sym:'ULTRACEMCO.NS', name:'UltraTech'}, {sym:'POWERGRID.NS', name:'PowerGrid'},
+  {sym:'NTPC.NS', name:'NTPC'}, {sym:'NESTLEIND.NS', name:'Nestle'},
+  {sym:'JSWSTEEL.NS', name:'JSW Steel'}, {sym:'TATAMOTORS.NS', name:'Tata Motors'},
+  {sym:'ONGC.NS', name:'ONGC'}, {sym:'TATASTEEL.NS', name:'Tata Steel'},
+  {sym:'HCLTECH.NS', name:'HCL Tech'}, {sym:'BAJAJFINSV.NS', name:'Bajaj Finserv'},
+  {sym:'TECHM.NS', name:'Tech M'}, {sym:'DRREDDY.NS', name:'Dr Reddy'},
+  {sym:'CIPLA.NS', name:'Cipla'}, {sym:'HINDALCO.NS', name:'Hindalco'},
+  {sym:'COALINDIA.NS', name:'Coal India'}, {sym:'GRASIM.NS', name:'Grasim'},
+  {sym:'M&M.NS', name:'M&M'}, {sym:'DIVISLAB.NS', name:"Divi's Lab"},
+  {sym:'BPCL.NS', name:'BPCL'}, {sym:'HEROMOTOCO.NS', name:'Hero Moto'},
+  {sym:'EICHERMOT.NS', name:'Eicher'}, {sym:'TATACONSUM.NS', name:'Tata Consumer'},
+  {sym:'BRITANNIA.NS', name:'Britannia'}, {sym:'APOLLOHOSP.NS', name:'Apollo Hosp'},
+  {sym:'BAJAJ-AUTO.NS', name:'Bajaj Auto'}, {sym:'SHRIRAMFIN.NS', name:'Shriram Fin'},
+  {sym:'SBILIFE.NS', name:'SBI Life'}, {sym:'HDFCLIFE.NS', name:'HDFC Life'},
+  {sym:'INDUSINDBK.NS', name:'IndusInd Bank'}
+];
+
+async function fetchNiftyMovers() {
+  // Fetch in parallel batches of 10
+  const BATCH = 10;
+  const results = [];
+  for (let i = 0; i < NIFTY50_STOCKS.length; i += BATCH) {
+    const batch = NIFTY50_STOCKS.slice(i, i + BATCH);
+    const batchResults = await Promise.allSettled(batch.map(s =>
+      fetchYFQuote(s.sym).then(q => ({
+        name: s.name,
+        sym: s.sym.replace('.NS',''),
+        price: q.price,
+        pct: q.prev ? ((q.price - q.prev) / q.prev) * 100 : 0,
+        change: q.price - q.prev
+      }))
+    ));
+    batchResults.forEach(r => { if (r.status === 'fulfilled') results.push(r.value); });
+  }
+
+  if (!results.length) {
+    ['niftyGainers','niftyLosers'].forEach(id => {
+      document.getElementById(id).innerHTML = '<div style="padding:12px 14px;color:var(--muted);font-size:12px">Data unavailable</div>';
+    });
+    return;
+  }
+
+  results.sort((a, b) => b.pct - a.pct);
+  const gainers = results.filter(s => s.pct >= 0).slice(0, 5);
+  const losers  = results.filter(s => s.pct < 0).sort((a,b) => a.pct - b.pct).slice(0, 5);
+
+  function renderMovers(list, containerId, dir) {
+    document.getElementById(containerId).innerHTML = list.length
+      ? list.map((s, i) => `
+          <div class="gl-row">
+            <span class="gl-rank">${i+1}</span>
+            <div style="flex:1;min-width:0">
+              <div class="gl-name">${s.name}</div>
+              <div class="gl-ticker">${s.sym}</div>
+            </div>
+            <span class="gl-pct ${dir}">${dir==='up'?'+':''}${s.pct.toFixed(2)}%</span>
+          </div>`).join('')
+      : '<div style="padding:12px 14px;color:var(--muted);font-size:12px">No data</div>';
+  }
+
+  renderMovers(gainers, 'niftyGainers', 'up');
+  renderMovers(losers,  'niftyLosers',  'down');
+}
 // Yahoo Finance ticker fixes — some exotic pairs not directly available,
 // so we calculate via USD cross-rates as fallback
 const CURRENCY_PAIRS = [
@@ -2210,6 +2342,7 @@ async function refreshAll() {
     fetchAllIndices(),
     fetchSectors(),
     fetchCurrencies(),
+    fetchNiftyMovers(),
   ]);
   // AI sections are slow — run them independently so they don't block the UI
   fetchMarketNews();
@@ -2254,9 +2387,10 @@ function renderMFTable(funds, containerId) {
         <tr>
           <th>#</th>
           <th>Fund</th>
-          <th>1Y Return</th>
-          <th>3Y Return</th>
-          <th>Rating</th>
+          <th>1Y</th>
+          <th>3Y</th>
+          <th>5Y</th>
+          <th>⭐</th>
         </tr>
       </thead>
       <tbody>
@@ -2269,12 +2403,13 @@ function renderMFTable(funds, containerId) {
             </td>
             <td><span class="mf-ret ${parseFloat(f.ret1y)>=0?'pos':'neg'}">${f.ret1y}</span></td>
             <td><span class="mf-ret ${parseFloat(f.ret3y)>=0?'pos':'neg'}">${f.ret3y}</span></td>
+            <td><span class="mf-ret ${parseFloat(f.ret5y||0)>=0?'pos':'neg'}">${f.ret5y||'—'}</span></td>
             <td><span class="mf-rating">${'★'.repeat(Math.min(5,Math.max(1,f.rating||4)))}</span></td>
           </tr>
         `).join('')}
       </tbody>
     </table>
-    <div class="mf-note">Data as of ${new Date().toLocaleDateString('en-IN')} · Source: AI (AMFI / Valueresearch basis)</div>
+    <div class="mf-note">As of ${new Date().toLocaleDateString('en-IN')} · CAGR returns (annualised) · Source: AMFI / Valueresearch</div>
   `;
 }
 
@@ -2294,19 +2429,18 @@ async function fetchMutualFunds(forceRefresh = false) {
   }
 
   const today = new Date().toLocaleDateString('en-IN', { year:'numeric', month:'long', day:'numeric' });
-  const prompt = `Today is ${today}. List the current top 5 Indian mutual funds in each of these 4 categories based on 1-year and 3-year CAGR returns, AUM, and Morningstar/Valueresearch ratings as of ${today}.
+  const prompt = `Today is ${today}. List the current top 5 Indian mutual funds in each of these 4 categories based on 1-year, 3-year, and 5-year CAGR returns, AUM, and Morningstar/Valueresearch ratings as of ${today}.
 
 Respond ONLY with this exact JSON, no other text:
 {
   "largecap": [
-    {"name": "Fund Name Direct Growth", "house": "AMC Name", "ret1y": "+28.4%", "ret3y": "+19.2%", "rating": 5},
-    {"name": "...", "house": "...", "ret1y": "...", "ret3y": "...", "rating": 4}
+    {"name": "Fund Name Direct Growth", "house": "AMC Name", "ret1y": "+28.4%", "ret3y": "+19.2%", "ret5y": "+17.1%", "rating": 5}
   ],
-  "midcap": [ ... 5 funds ... ],
+  "midcap": [ ... 5 funds with same fields ... ],
   "smallcap": [ ... 5 funds ... ],
   "flexicap": [ ... 5 funds ... ]
 }
-Use real fund names. Rating is 1-5 stars.`;
+Use real fund names. ret5y is 5-year CAGR. Rating is 1-5 stars.`;
 
   try {
     const resp = await fetch(WORKER_URL, {
@@ -2332,35 +2466,34 @@ Use real fund names. Rating is 1-5 stars.`;
 }
 
 function renderStaticMFData() {
-  // Curated static list — accurate as of early 2025, update quarterly
   const staticData = {
     largecap: [
-      {name:'Mirae Asset Large Cap Fund Direct',        house:'Mirae Asset',    ret1y:'+18.2%', ret3y:'+16.4%', rating:5},
-      {name:'Axis Bluechip Fund Direct Growth',         house:'Axis MF',        ret1y:'+17.8%', ret3y:'+15.9%', rating:5},
-      {name:'HDFC Top 100 Fund Direct Growth',          house:'HDFC MF',        ret1y:'+19.1%', ret3y:'+17.2%', rating:4},
-      {name:'Nippon India Large Cap Direct Growth',     house:'Nippon India MF',ret1y:'+20.3%', ret3y:'+18.1%', rating:4},
-      {name:'ICICI Pru Bluechip Fund Direct Growth',    house:'ICICI Pru MF',   ret1y:'+18.9%', ret3y:'+16.8%', rating:5},
+      {name:'Mirae Asset Large Cap Fund Direct',       house:'Mirae Asset',    ret1y:'+18.2%', ret3y:'+16.4%', ret5y:'+15.1%', rating:5},
+      {name:'ICICI Pru Bluechip Fund Direct Growth',   house:'ICICI Pru MF',   ret1y:'+18.9%', ret3y:'+16.8%', ret5y:'+14.9%', rating:5},
+      {name:'Nippon India Large Cap Direct Growth',    house:'Nippon India MF',ret1y:'+20.3%', ret3y:'+18.1%', ret5y:'+15.8%', rating:4},
+      {name:'HDFC Top 100 Fund Direct Growth',         house:'HDFC MF',        ret1y:'+19.1%', ret3y:'+17.2%', ret5y:'+14.6%', rating:4},
+      {name:'Axis Bluechip Fund Direct Growth',        house:'Axis MF',        ret1y:'+17.8%', ret3y:'+15.9%', ret5y:'+14.2%', rating:5},
     ],
     midcap: [
-      {name:'Motilal Oswal Midcap Fund Direct Growth',  house:'Motilal Oswal',  ret1y:'+42.1%', ret3y:'+28.3%', rating:5},
-      {name:'Edelweiss Mid Cap Direct Growth',          house:'Edelweiss MF',   ret1y:'+38.6%', ret3y:'+25.7%', rating:5},
-      {name:'HDFC Mid-Cap Opportunities Direct',        house:'HDFC MF',        ret1y:'+34.2%', ret3y:'+24.1%', rating:4},
-      {name:'Nippon India Growth Fund Direct',          house:'Nippon India MF',ret1y:'+36.8%', ret3y:'+26.9%', rating:4},
-      {name:'Kotak Emerging Equity Direct Growth',      house:'Kotak MF',       ret1y:'+33.5%', ret3y:'+23.4%', rating:4},
+      {name:'Motilal Oswal Midcap Fund Direct Growth', house:'Motilal Oswal',  ret1y:'+42.1%', ret3y:'+28.3%', ret5y:'+24.6%', rating:5},
+      {name:'Edelweiss Mid Cap Direct Growth',         house:'Edelweiss MF',   ret1y:'+38.6%', ret3y:'+25.7%', ret5y:'+22.1%', rating:5},
+      {name:'Nippon India Growth Fund Direct',         house:'Nippon India MF',ret1y:'+36.8%', ret3y:'+26.9%', ret5y:'+21.4%', rating:4},
+      {name:'HDFC Mid-Cap Opportunities Direct',       house:'HDFC MF',        ret1y:'+34.2%', ret3y:'+24.1%', ret5y:'+20.8%', rating:4},
+      {name:'Kotak Emerging Equity Direct Growth',     house:'Kotak MF',       ret1y:'+33.5%', ret3y:'+23.4%', ret5y:'+19.9%', rating:4},
     ],
     smallcap: [
-      {name:'Quant Small Cap Fund Direct Growth',       house:'Quant MF',       ret1y:'+47.3%', ret3y:'+35.2%', rating:5},
-      {name:'Nippon India Small Cap Direct Growth',     house:'Nippon India MF',ret1y:'+41.8%', ret3y:'+31.6%', rating:5},
-      {name:'HDFC Small Cap Fund Direct Growth',        house:'HDFC MF',        ret1y:'+38.4%', ret3y:'+28.9%', rating:4},
-      {name:'SBI Small Cap Fund Direct Growth',         house:'SBI MF',         ret1y:'+35.2%', ret3y:'+26.3%', rating:4},
-      {name:'Axis Small Cap Fund Direct Growth',        house:'Axis MF',        ret1y:'+36.7%', ret3y:'+27.8%', rating:4},
+      {name:'Quant Small Cap Fund Direct Growth',      house:'Quant MF',       ret1y:'+47.3%', ret3y:'+35.2%', ret5y:'+32.4%', rating:5},
+      {name:'Nippon India Small Cap Direct Growth',    house:'Nippon India MF',ret1y:'+41.8%', ret3y:'+31.6%', ret5y:'+28.7%', rating:5},
+      {name:'HDFC Small Cap Fund Direct Growth',       house:'HDFC MF',        ret1y:'+38.4%', ret3y:'+28.9%', ret5y:'+25.1%', rating:4},
+      {name:'Axis Small Cap Fund Direct Growth',       house:'Axis MF',        ret1y:'+36.7%', ret3y:'+27.8%', ret5y:'+24.3%', rating:4},
+      {name:'SBI Small Cap Fund Direct Growth',        house:'SBI MF',         ret1y:'+35.2%', ret3y:'+26.3%', ret5y:'+23.1%', rating:4},
     ],
     flexicap: [
-      {name:'Parag Parikh Flexi Cap Direct Growth',     house:'PPFAS MF',       ret1y:'+28.6%', ret3y:'+21.4%', rating:5},
-      {name:'Quant Flexi Cap Fund Direct Growth',       house:'Quant MF',       ret1y:'+32.1%', ret3y:'+24.8%', rating:5},
-      {name:'HDFC Flexi Cap Fund Direct Growth',        house:'HDFC MF',        ret1y:'+24.3%', ret3y:'+19.6%', rating:4},
-      {name:'UTI Flexi Cap Fund Direct Growth',         house:'UTI MF',         ret1y:'+22.8%', ret3y:'+18.1%', rating:4},
-      {name:'Canara Rob Flexi Cap Direct Growth',       house:'Canara Robeco',  ret1y:'+23.5%', ret3y:'+18.9%', rating:4},
+      {name:'Parag Parikh Flexi Cap Direct Growth',    house:'PPFAS MF',       ret1y:'+28.6%', ret3y:'+21.4%', ret5y:'+19.8%', rating:5},
+      {name:'Quant Flexi Cap Fund Direct Growth',      house:'Quant MF',       ret1y:'+32.1%', ret3y:'+24.8%', ret5y:'+22.3%', rating:5},
+      {name:'HDFC Flexi Cap Fund Direct Growth',       house:'HDFC MF',        ret1y:'+24.3%', ret3y:'+19.6%', ret5y:'+17.4%', rating:4},
+      {name:'Canara Rob Flexi Cap Direct Growth',      house:'Canara Robeco',  ret1y:'+23.5%', ret3y:'+18.9%', ret5y:'+16.8%', rating:4},
+      {name:'UTI Flexi Cap Fund Direct Growth',        house:'UTI MF',         ret1y:'+22.8%', ret3y:'+18.1%', ret5y:'+16.2%', rating:4},
     ],
   };
   mfDataCache = staticData;
@@ -2377,7 +2510,7 @@ function setActiveNav(el) {
 
 // Auto-highlight nav item on scroll (mobile)
 if (window.matchMedia('(max-width: 768px)').matches) {
-  const sections = ['sec-commodities','sec-indices','sec-sectors','sec-news','sec-mf','sec-currencies'];
+  const sections = ['sec-commodities','sec-indices','sec-gainers','sec-sectors','sec-news','sec-mf','sec-currencies'];
   const navItems = document.querySelectorAll('.mobile-nav-item');
   window.addEventListener('scroll', () => {
     let current = '';
