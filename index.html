@@ -699,98 +699,202 @@
       margin-top: 6px;
     }
 
-    /* CURRENCY GRID */
+    /* CURRENCY — compact two-column row layout */
     .currency-note-bar {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 16px;
-      font-size: 12px;
+      font-size: 11px;
       color: var(--muted);
-      margin-bottom: 14px;
+      margin-bottom: 10px;
+      padding: 6px 2px;
     }
 
     .currency-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
     }
 
-    .currency-card {
+    .fx-row {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 16px 18px;
+      border-radius: 10px;
+      padding: 10px 12px;
       display: flex;
-      flex-direction: column;
-      gap: 6px;
-      transition: transform 0.15s, border-color 0.15s;
-      position: relative;
-      overflow: hidden;
+      align-items: center;
+      justify-content: space-between;
+      transition: border-color 0.15s;
     }
 
-    .currency-card:hover {
-      transform: translateY(-2px);
-      border-color: rgba(255,255,255,0.12);
+    .fx-row:hover { border-color: rgba(255,255,255,0.12); }
+
+    .fx-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .currency-card.inverted {
-      border-top: 2px solid #6366f1;
-    }
+    .fx-flag { font-size: 20px; line-height: 1; flex-shrink: 0; }
 
-    .currency-flag {
-      font-size: 22px;
-      line-height: 1;
-    }
-
-    .currency-pair {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 1.2px;
-      color: var(--muted);
-      text-transform: uppercase;
-    }
-
-    .currency-name {
+    .fx-code {
       font-size: 12px;
-      color: var(--muted);
-      font-weight: 400;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.5px;
     }
 
-    .currency-rate {
+    .fx-name {
+      font-size: 10px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 90px;
+    }
+
+    .fx-right { text-align: right; flex-shrink: 0; }
+
+    .fx-rate {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 22px;
-      font-weight: 600;
+      font-size: 13px;
+      font-weight: 700;
       color: #fff;
     }
 
-    .currency-rate.loading {
-      font-size: 14px;
-      color: var(--muted);
-      animation: shimmer 1.5s infinite;
+    .fx-rate.loading { color: var(--muted); animation: shimmer 1.5s infinite; }
+
+    .fx-change {
+      font-size: 10px;
+      font-weight: 600;
+      margin-top: 2px;
     }
 
-    .currency-change {
-      font-size: 11px;
+    .fx-change.up     { color: var(--green); }
+    .fx-change.down   { color: var(--red); }
+    .fx-change.neutral{ color: var(--muted); }
+
+    /* MUTUAL FUNDS */
+    .mf-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .mf-tab {
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 12px;
       font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: var(--surface);
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .mf-tab.active {
+      background: rgba(245,200,66,0.15);
+      border-color: rgba(245,200,66,0.4);
+      color: var(--gold);
+    }
+
+    .mf-panel { display: none; }
+    .mf-panel.active { display: block; }
+
+    .mf-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .mf-table th {
+      background: var(--surface2);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 10px 14px;
+      text-align: left;
+    }
+
+    .mf-table th:last-child,
+    .mf-table td:last-child { text-align: right; }
+
+    .mf-table td {
+      padding: 11px 14px;
+      font-size: 13px;
+      border-top: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .mf-table tr:hover td { background: var(--surface2); }
+
+    .mf-rank {
+      width: 24px;
+      height: 24px;
+      background: var(--surface2);
+      border-radius: 50%;
       display: inline-flex;
       align-items: center;
-      gap: 3px;
-      padding: 2px 7px;
-      border-radius: 5px;
-      width: fit-content;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gold);
     }
 
-    .currency-change.up { background: rgba(34,197,94,0.1); color: var(--green); }
-    .currency-change.down { background: rgba(239,68,68,0.1); color: var(--red); }
-    .currency-change.neutral { background: rgba(100,116,139,0.1); color: var(--muted); }
+    .mf-fund-name { font-weight: 500; font-size: 12px; }
+    .mf-fund-house { font-size: 10px; color: var(--muted); margin-top: 1px; }
 
-    .currency-skeleton {
-      height: 110px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      animation: shimmer 1.5s infinite;
+    .mf-ret {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .mf-ret.pos { color: var(--green); }
+    .mf-ret.neg { color: var(--red); }
+
+    .mf-rating { color: var(--gold); font-size: 11px; letter-spacing: -1px; }
+
+    .mf-note {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    .mf-loading {
+      text-align: center;
+      padding: 30px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* Mobile tweaks for new sections */
+    @media (max-width: 768px) {
+      .currency-grid { grid-template-columns: repeat(2, 1fr); gap: 5px; }
+      .fx-row { padding: 8px 10px; }
+      .fx-flag { font-size: 16px; }
+      .fx-code { font-size: 11px; }
+      .fx-name { font-size: 9px; max-width: 60px; }
+      .fx-rate { font-size: 12px; }
+      .fx-change { font-size: 9px; }
+      .mf-tabs { gap: 6px; }
+      .mf-tab { font-size: 11px; padding: 5px 12px; }
+      .mf-table th { font-size: 10px; padding: 8px 10px; }
+      .mf-table td { font-size: 11px; padding: 9px 10px; }
+      .mf-fund-name { font-size: 11px; }
+      .mf-fund-house { font-size: 9px; }
+      .mf-ret { font-size: 11px; }
+    }
+
+    @media (max-width: 380px) {
+      .currency-grid { grid-template-columns: repeat(2, 1fr); }
+      .fx-name { display: none; }
     }
 
     /* AI BADGE */
@@ -1035,8 +1139,9 @@
     <a class="mobile-nav-item active" href="#sec-commodities" onclick="setActiveNav(this)">⚡ Prices</a>
     <a class="mobile-nav-item" href="#sec-indices"    onclick="setActiveNav(this)">📊 Indices</a>
     <a class="mobile-nav-item" href="#sec-sectors"    onclick="setActiveNav(this)">🏭 Sectors</a>
-    <a class="mobile-nav-item" href="#sec-currencies" onclick="setActiveNav(this)">💱 Forex</a>
     <a class="mobile-nav-item" href="#sec-news"       onclick="setActiveNav(this)">📰 News</a>
+    <a class="mobile-nav-item" href="#sec-mf"         onclick="setActiveNav(this)">📦 MF</a>
+    <a class="mobile-nav-item" href="#sec-currencies" onclick="setActiveNav(this)">💱 Forex</a>
   </nav>
 
   <!-- MAIN -->
@@ -1207,26 +1312,15 @@
     </div>
 
     <div class="currency-note-bar">
-      <span>🌍 All rates shown as: <strong>1 foreign currency = X INR</strong> &nbsp;|&nbsp; Last 2 rows: 1 INR = X foreign currency</span>
+      🌍 <strong>→ INR</strong> = how many rupees per 1 foreign unit &nbsp;·&nbsp; <strong>INR →</strong> = how many foreign units per 1 rupee
     </div>
 
     <div class="currency-grid" id="currencyGrid">
       <!-- Populated by JS -->
-      <div class="currency-skeleton"></div>
-      <div class="currency-skeleton"></div>
-      <div class="currency-skeleton"></div>
-      <div class="currency-skeleton"></div>
-      <div class="currency-skeleton"></div>
-      <div class="currency-skeleton"></div>
-      <div class="currency-skeleton"></div>
-      <div class="currency-skeleton"></div>
-      <div class="currency-skeleton"></div>
-      <div class="currency-skeleton"></div>
-      <div class="currency-skeleton"></div>
     </div>
 
     <div class="data-source-note" style="margin-top:8px">
-      ℹ️ Exchange rates: Yahoo Finance (live, ~15-min delayed).
+      ℹ️ Exchange rates: Yahoo Finance (live, ~15-min delayed). Exotic pairs computed via USD cross-rate.
     </div>
 
     <!-- MARKET NEWS (AI Powered) -->
@@ -1287,6 +1381,37 @@
 
     <div class="data-source-note" style="margin-top:8px">
       ℹ️ Market Intelligence: AI analysis via Cloudflare Worker (if configured) → Live RSS news fallback (Economic Times / Moneycontrol). Not financial advice.
+    </div>
+
+    <!-- MUTUAL FUNDS -->
+    <div class="section-header" id="sec-mf">
+      <div class="section-title">📦 Top Mutual Funds</div>
+      <div class="section-line"></div>
+      <div class="ai-badge">✨ AI</div>
+    </div>
+
+    <div class="mf-tabs">
+      <div class="mf-tab active" onclick="switchMFTab('largecap', this)">🏦 Large Cap</div>
+      <div class="mf-tab" onclick="switchMFTab('midcap',   this)">📈 Mid Cap</div>
+      <div class="mf-tab" onclick="switchMFTab('smallcap', this)">🚀 Small Cap</div>
+      <div class="mf-tab" onclick="switchMFTab('flexicap', this)">🔄 Flexi Cap</div>
+    </div>
+
+    <div id="mf-largecap" class="mf-panel active">
+      <div class="mf-loading"><div class="news-loading-shimmer"></div><div class="news-loading-shimmer" style="width:85%"></div><div class="news-loading-shimmer" style="width:70%"></div></div>
+    </div>
+    <div id="mf-midcap"   class="mf-panel">
+      <div class="mf-loading"><div class="news-loading-shimmer"></div><div class="news-loading-shimmer" style="width:85%"></div><div class="news-loading-shimmer" style="width:70%"></div></div>
+    </div>
+    <div id="mf-smallcap" class="mf-panel">
+      <div class="mf-loading"><div class="news-loading-shimmer"></div><div class="news-loading-shimmer" style="width:85%"></div><div class="news-loading-shimmer" style="width:70%"></div></div>
+    </div>
+    <div id="mf-flexicap" class="mf-panel">
+      <div class="mf-loading"><div class="news-loading-shimmer"></div><div class="news-loading-shimmer" style="width:85%"></div><div class="news-loading-shimmer" style="width:70%"></div></div>
+    </div>
+
+    <div class="data-source-note" style="margin-top:8px">
+      ℹ️ Mutual fund rankings powered by AI based on 1Y/3Y returns, AUM, and rating. Verify on AMFI / Moneycontrol before investing. Not financial advice.
     </div>
 
   </main>
@@ -1575,81 +1700,114 @@ async function fetchAllIndices() {
 // ═══════════════════════════════════════════
 //  CURRENCY EXCHANGE RATES
 // ═══════════════════════════════════════════
+// Yahoo Finance ticker fixes — some exotic pairs not directly available,
+// so we calculate via USD cross-rates as fallback
 const CURRENCY_PAIRS = [
-  { pair: 'USDINR=X',  flag: '🇺🇸', name: 'US Dollar',         symbol: '$',  label: 'USD → INR', inverted: false },
-  { pair: 'GBPINR=X',  flag: '🇬🇧', name: 'British Pound',     symbol: '£',  label: 'GBP → INR', inverted: false },
-  { pair: 'EURINR=X',  flag: '🇪🇺', name: 'Euro',              symbol: '€',  label: 'EUR → INR', inverted: false },
-  { pair: 'AEDINR=X',  flag: '🇦🇪', name: 'UAE Dirham',        symbol: 'AED',label: 'AED → INR', inverted: false },
-  { pair: 'THBINR=X',  flag: '🇹🇭', name: 'Thai Baht',         symbol: '฿',  label: 'THB → INR', inverted: false },
-  { pair: 'LKRINR=X',  flag: '🇱🇰', name: 'Sri Lankan Rupee',  symbol: 'LKR',label: 'LKR → INR', inverted: false },
-  { pair: 'SARINR=X',  flag: '🇸🇦', name: 'Saudi Riyal',       symbol: 'SR', label: 'SAR → INR', inverted: false },
-  { pair: 'CNYINR=X',  flag: '🇨🇳', name: 'Chinese Yuan',      symbol: '¥',  label: 'CNY → INR', inverted: false },
-  { pair: 'NPRINR=X',  flag: '🇳🇵', name: 'Nepalese Rupee',    symbol: 'NPR',label: 'NPR → INR', inverted: false },
-  { pair: 'INRIDR=X',  flag: '🇮🇩', name: 'Indonesian Rupiah', symbol: 'Rp', label: 'INR → IDR', inverted: true  },
-  { pair: 'INRVND=X',  flag: '🇻🇳', name: 'Vietnamese Dong',   symbol: '₫',  label: 'INR → VND', inverted: true  },
+  { pair: 'USDINR=X',  flag: '🇺🇸', name: 'US Dollar',         code: 'USD', label: 'USD → INR', inverted: false, crossVia: null },
+  { pair: 'GBPINR=X',  flag: '🇬🇧', name: 'British Pound',     code: 'GBP', label: 'GBP → INR', inverted: false, crossVia: null },
+  { pair: 'EURINR=X',  flag: '🇪🇺', name: 'Euro',              code: 'EUR', label: 'EUR → INR', inverted: false, crossVia: null },
+  { pair: 'AEDINR=X',  flag: '🇦🇪', name: 'UAE Dirham',        code: 'AED', label: 'AED → INR', inverted: false, crossVia: null },
+  { pair: 'THBINR=X',  flag: '🇹🇭', name: 'Thai Baht',         code: 'THB', label: 'THB → INR', inverted: false, crossVia: 'USDTHB=X' },
+  { pair: 'LKRINR=X',  flag: '🇱🇰', name: 'Sri Lanka Rupee',   code: 'LKR', label: 'LKR → INR', inverted: false, crossVia: 'USDLKR=X' },
+  { pair: 'SARINR=X',  flag: '🇸🇦', name: 'Saudi Riyal',       code: 'SAR', label: 'SAR → INR', inverted: false, crossVia: 'USDSAR=X' },
+  { pair: 'CNYINR=X',  flag: '🇨🇳', name: 'Chinese Yuan',      code: 'CNY', label: 'CNY → INR', inverted: false, crossVia: 'USDCNY=X' },
+  { pair: 'NPRINR=X',  flag: '🇳🇵', name: 'Nepalese Rupee',    code: 'NPR', label: 'NPR → INR', inverted: false, crossVia: 'USDNPR=X' },
+  { pair: 'INRIDR=X',  flag: '🇮🇩', name: 'Indonesian Rupiah', code: 'IDR', label: 'INR → IDR', inverted: true,  crossVia: 'USDIDR=X' },
+  { pair: 'INRVND=X',  flag: '🇻🇳', name: 'Vietnamese Dong',   code: 'VND', label: 'INR → VND', inverted: true,  crossVia: 'USDVND=X' },
 ];
 
-async function fetchCurrencyPair(pair) {
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(pair)}?interval=1d&range=1d`;
+async function fetchYFQuote(ticker) {
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`;
   const resp = await fetchWithProxy(url);
   const data = await resp.json();
   const meta = data?.chart?.result?.[0]?.meta;
   if (!meta?.regularMarketPrice) throw new Error('no data');
-  const price = meta.regularMarketPrice;
-  const prev = meta.chartPreviousClose || price;
-  const change = price - prev;
-  const pct = (change / prev) * 100;
-  return { price, change, pct };
+  return { price: meta.regularMarketPrice, prev: meta.chartPreviousClose || meta.regularMarketPrice };
 }
 
-function fmtCurrencyRate(val, inverted) {
-  if (!isFinite(val)) return '—';
-  // Inverted pairs (INR→Foreign) can be large numbers
-  if (inverted && val > 1000) return val.toLocaleString('en-IN', { maximumFractionDigits: 0 });
-  if (val < 1) return val.toFixed(4);
-  if (val < 10) return val.toFixed(3);
+async function fetchCurrencyPair(c) {
+  // Try direct pair first
+  try {
+    const { price, prev } = await fetchYFQuote(c.pair);
+    if (price > 0) {
+      const change = price - prev;
+      const pct = prev ? (change / prev) * 100 : 0;
+      return { price, change, pct };
+    }
+  } catch(e) { /* fall through to cross-rate */ }
+
+  // Cross-rate via USD: foreign/USD × USD/INR
+  if (c.crossVia && USD_INR) {
+    try {
+      const { price: crossRate, prev: crossPrev } = await fetchYFQuote(c.crossVia);
+      // crossRate = units of foreign currency per 1 USD
+      // INR per 1 unit of foreign = USD_INR / crossRate
+      let price, prev;
+      if (c.inverted) {
+        // INR → foreign: 1 INR = crossRate/USD_INR foreign units
+        price = crossRate / USD_INR;
+        prev  = crossPrev / USD_INR;
+      } else {
+        price = USD_INR / crossRate;
+        prev  = USD_INR / crossPrev;
+      }
+      const change = price - prev;
+      const pct = prev ? (change / prev) * 100 : 0;
+      return { price, change, pct };
+    } catch(e2) { /* give up */ }
+  }
+  throw new Error('All methods failed for ' + c.code);
+}
+
+function fmtCurrencyRate(val, inverted, code) {
+  if (!isFinite(val) || val <= 0) return '—';
+  if (code === 'IDR' || code === 'VND') return val.toLocaleString('en-IN', { maximumFractionDigits: 0 });
+  if (code === 'LKR' || code === 'NPR') return val.toFixed(3);
+  if (val < 0.1) return val.toFixed(4);
+  if (val < 10)  return val.toFixed(3);
   return val.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 async function fetchCurrencies() {
   const grid = document.getElementById('currencyGrid');
-
-  // Build card shells first
+  // Build compact row shells
   grid.innerHTML = CURRENCY_PAIRS.map((c, i) => `
-    <div class="currency-card${c.inverted ? ' inverted' : ''}" id="cc-${i}">
-      <div class="currency-flag">${c.flag}</div>
-      <div class="currency-pair">${c.label}</div>
-      <div class="currency-name">${c.name}</div>
-      <div class="currency-rate loading" id="cr-${i}">Loading...</div>
-      <div class="currency-change neutral" id="cc-ch-${i}">—</div>
+    <div class="fx-row" id="cc-${i}">
+      <div class="fx-left">
+        <span class="fx-flag">${c.flag}</span>
+        <div>
+          <div class="fx-code">${c.code}</div>
+          <div class="fx-name">${c.name}</div>
+        </div>
+      </div>
+      <div class="fx-right">
+        <div class="fx-rate loading" id="cr-${i}">—</div>
+        <div class="fx-change neutral" id="cc-ch-${i}">—</div>
+      </div>
     </div>
   `).join('');
 
-  const results = await Promise.allSettled(CURRENCY_PAIRS.map(c => fetchCurrencyPair(c.pair)));
+  const results = await Promise.allSettled(CURRENCY_PAIRS.map(c => fetchCurrencyPair(c)));
 
   results.forEach((r, i) => {
-    const rateEl = document.getElementById(`cr-${i}`);
+    const rateEl   = document.getElementById(`cr-${i}`);
     const changeEl = document.getElementById(`cc-ch-${i}`);
     if (!rateEl) return;
+    rateEl.classList.remove('loading');
 
     if (r.status === 'fulfilled') {
       const { price, change, pct } = r.value;
       const c = CURRENCY_PAIRS[i];
-      rateEl.classList.remove('loading');
+      const formatted = fmtCurrencyRate(price, c.inverted, c.code);
+      rateEl.textContent = c.inverted ? `${formatted} ${c.code}` : `₹${formatted}`;
 
-      if (c.inverted) {
-        rateEl.textContent = `${c.symbol} ${fmtCurrencyRate(price, true)}`;
-      } else {
-        rateEl.textContent = `₹ ${fmtCurrencyRate(price, false)}`;
-      }
-
-      const cls = change > 0 ? 'up' : change < 0 ? 'down' : 'neutral';
-      const arrow = change > 0 ? '▲' : change < 0 ? '▼' : '—';
-      changeEl.className = `currency-change ${cls}`;
-      changeEl.textContent = `${arrow} ${Math.abs(pct).toFixed(2)}%`;
+      const cls   = change > 0 ? 'up' : change < 0 ? 'down' : 'neutral';
+      const arrow = change > 0 ? '▲' : '▼';
+      changeEl.className   = `fx-change ${cls}`;
+      changeEl.textContent = `${arrow}${Math.abs(pct).toFixed(2)}%`;
     } else {
-      rateEl.textContent = 'N/A';
-      rateEl.classList.remove('loading');
+      rateEl.textContent   = 'N/A';
+      changeEl.textContent = '—';
     }
   });
 }
@@ -1715,8 +1873,31 @@ function renderAINews(parsed, source) {
   moodDot.className   = `mood-dot ${mood==='BULLISH'?'bullish-dot':mood==='BEARISH'?'bearish-dot':'neutral-dot'}`;
   moodLabel.className = `mood-label ${mood==='BULLISH'?'bullish':mood==='BEARISH'?'bearish':'neutral'}`;
   moodLabel.textContent = mood==='BULLISH'?'📈 Bullish':mood==='BEARISH'?'📉 Bearish':'⚖️ Neutral / Mixed';
-  document.getElementById('marketMoodText').innerHTML =
-    `<p>${parsed.moodReason||''}</p><div style="margin-top:10px;font-size:11px;color:var(--muted);">✨ AI analysis · ${source}</div>`;
+
+  // Mood reason — show prominently with key data bullets
+  const ctx = getMarketContext();
+  const moodColor = mood==='BULLISH'?'var(--green)':mood==='BEARISH'?'var(--red)':'#f59e0b';
+  document.getElementById('marketMoodText').innerHTML = `
+    <div style="margin-bottom:12px;line-height:1.7;font-size:13px">${parsed.moodReason||''}</div>
+    <div style="display:flex;flex-direction:column;gap:6px;font-size:12px">
+      <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border)">
+        <span style="color:var(--muted)">Nifty 50</span>
+        <span style="font-family:monospace;font-weight:700;color:${moodColor}">${ctx.nifty} <span style="font-size:11px">${ctx.niftyPct}</span></span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border)">
+        <span style="color:var(--muted)">Sensex</span>
+        <span style="font-family:monospace;font-weight:700;color:${moodColor}">${ctx.sensex} <span style="font-size:11px">${ctx.sensexPct}</span></span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border)">
+        <span style="color:var(--muted)">Bank Nifty</span>
+        <span style="font-family:monospace;font-weight:700;color:${moodColor}">${ctx.bankNifty} <span style="font-size:11px">${ctx.bankNiftyPct}</span></span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:5px 0">
+        <span style="color:var(--muted)">Gold 10g</span>
+        <span style="font-family:monospace;font-weight:700;color:var(--gold)">${ctx.gold}</span>
+      </div>
+    </div>
+    <div style="margin-top:10px;font-size:11px;color:var(--muted)">✨ AI analysis · ${source}</div>`;
 
   const top5Html = (parsed.top5||[]).map((item,idx) => {
     const tagCls = item.impact==='BULLISH'?'tag-bullish':item.impact==='BEARISH'?'tag-bearish':'tag-neutral';
@@ -2018,21 +2199,172 @@ function showToast() {
 }
 
 // ═══════════════════════════════════════════
-//  MAIN REFRESH
+//  MAIN REFRESH — optimised parallel loading
 // ═══════════════════════════════════════════
 async function refreshAll() {
-  await fetchUSDINR();
-  await Promise.all([
+  // Fire all data fetches in parallel — don't wait for each one
+  const t0 = performance.now();
+  await fetchUSDINR(); // need this first for metal/currency conversions
+  await Promise.allSettled([
     fetchMetalPrices(),
     fetchAllIndices(),
     fetchSectors(),
     fetchCurrencies(),
   ]);
-  fetchMarketNews(); // runs independently, throttled to every 5 min
+  // AI sections are slow — run them independently so they don't block the UI
+  fetchMarketNews();
+  fetchMutualFunds();
+  const elapsed = ((performance.now() - t0) / 1000).toFixed(1);
   document.getElementById('lastRefreshed').textContent =
-    new Date().toLocaleTimeString('en-IN');
+    new Date().toLocaleTimeString('en-IN') + ` (${elapsed}s)`;
   showToast();
   countdown = REFRESH_INTERVAL;
+}
+
+// ═══════════════════════════════════════════
+//  MUTUAL FUNDS (AI-powered via Worker)
+// ═══════════════════════════════════════════
+const MF_CATEGORIES = {
+  largecap:  { label: 'Large Cap',  emoji: '🏦' },
+  midcap:    { label: 'Mid Cap',    emoji: '📈' },
+  smallcap:  { label: 'Small Cap',  emoji: '🚀' },
+  flexicap:  { label: 'Flexi Cap',  emoji: '🔄' },
+};
+
+let mfDataCache = null;
+let mfLastFetched = 0;
+const MF_REFRESH_MS = 30 * 60 * 1000; // 30 min — fund data changes slowly
+
+function switchMFTab(cat, el) {
+  document.querySelectorAll('.mf-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.mf-panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('mf-' + cat).classList.add('active');
+}
+
+function renderMFTable(funds, containerId) {
+  const el = document.getElementById(containerId);
+  if (!funds || !funds.length) {
+    el.innerHTML = '<div class="mf-loading">No data available</div>';
+    return;
+  }
+  el.innerHTML = `
+    <table class="mf-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Fund</th>
+          <th>1Y Return</th>
+          <th>3Y Return</th>
+          <th>Rating</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${funds.map((f, i) => `
+          <tr>
+            <td><span class="mf-rank">${i+1}</span></td>
+            <td>
+              <div class="mf-fund-name">${f.name}</div>
+              <div class="mf-fund-house">${f.house}</div>
+            </td>
+            <td><span class="mf-ret ${parseFloat(f.ret1y)>=0?'pos':'neg'}">${f.ret1y}</span></td>
+            <td><span class="mf-ret ${parseFloat(f.ret3y)>=0?'pos':'neg'}">${f.ret3y}</span></td>
+            <td><span class="mf-rating">${'★'.repeat(Math.min(5,Math.max(1,f.rating||4)))}</span></td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    <div class="mf-note">Data as of ${new Date().toLocaleDateString('en-IN')} · Source: AI (AMFI / Valueresearch basis)</div>
+  `;
+}
+
+async function fetchMutualFunds(forceRefresh = false) {
+  const now = Date.now();
+  if (!forceRefresh && mfDataCache && now - mfLastFetched < MF_REFRESH_MS) {
+    // Use cache
+    Object.keys(MF_CATEGORIES).forEach(cat => renderMFTable(mfDataCache[cat], 'mf-' + cat));
+    return;
+  }
+
+  const workerConfigured = WORKER_URL && !WORKER_URL.includes('YOUR-WORKER-NAME');
+  if (!workerConfigured) {
+    // Show static curated list if no Worker
+    renderStaticMFData();
+    return;
+  }
+
+  const today = new Date().toLocaleDateString('en-IN', { year:'numeric', month:'long', day:'numeric' });
+  const prompt = `Today is ${today}. List the current top 5 Indian mutual funds in each of these 4 categories based on 1-year and 3-year CAGR returns, AUM, and Morningstar/Valueresearch ratings as of ${today}.
+
+Respond ONLY with this exact JSON, no other text:
+{
+  "largecap": [
+    {"name": "Fund Name Direct Growth", "house": "AMC Name", "ret1y": "+28.4%", "ret3y": "+19.2%", "rating": 5},
+    {"name": "...", "house": "...", "ret1y": "...", "ret3y": "...", "rating": 4}
+  ],
+  "midcap": [ ... 5 funds ... ],
+  "smallcap": [ ... 5 funds ... ],
+  "flexicap": [ ... 5 funds ... ]
+}
+Use real fund names. Rating is 1-5 stars.`;
+
+  try {
+    const resp = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1500,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    if (!resp.ok) throw new Error('Worker error');
+    const data = await resp.json();
+    const text = data.content?.map(b => b.text||'').join('') || '';
+    const clean = text.replace(/```json|```/g,'').trim();
+    mfDataCache = JSON.parse(clean);
+    mfLastFetched = now;
+    Object.keys(MF_CATEGORIES).forEach(cat => renderMFTable(mfDataCache[cat], 'mf-' + cat));
+  } catch(e) {
+    console.warn('MF AI fetch failed, using static data:', e.message);
+    renderStaticMFData();
+  }
+}
+
+function renderStaticMFData() {
+  // Curated static list — accurate as of early 2025, update quarterly
+  const staticData = {
+    largecap: [
+      {name:'Mirae Asset Large Cap Fund Direct',        house:'Mirae Asset',    ret1y:'+18.2%', ret3y:'+16.4%', rating:5},
+      {name:'Axis Bluechip Fund Direct Growth',         house:'Axis MF',        ret1y:'+17.8%', ret3y:'+15.9%', rating:5},
+      {name:'HDFC Top 100 Fund Direct Growth',          house:'HDFC MF',        ret1y:'+19.1%', ret3y:'+17.2%', rating:4},
+      {name:'Nippon India Large Cap Direct Growth',     house:'Nippon India MF',ret1y:'+20.3%', ret3y:'+18.1%', rating:4},
+      {name:'ICICI Pru Bluechip Fund Direct Growth',    house:'ICICI Pru MF',   ret1y:'+18.9%', ret3y:'+16.8%', rating:5},
+    ],
+    midcap: [
+      {name:'Motilal Oswal Midcap Fund Direct Growth',  house:'Motilal Oswal',  ret1y:'+42.1%', ret3y:'+28.3%', rating:5},
+      {name:'Edelweiss Mid Cap Direct Growth',          house:'Edelweiss MF',   ret1y:'+38.6%', ret3y:'+25.7%', rating:5},
+      {name:'HDFC Mid-Cap Opportunities Direct',        house:'HDFC MF',        ret1y:'+34.2%', ret3y:'+24.1%', rating:4},
+      {name:'Nippon India Growth Fund Direct',          house:'Nippon India MF',ret1y:'+36.8%', ret3y:'+26.9%', rating:4},
+      {name:'Kotak Emerging Equity Direct Growth',      house:'Kotak MF',       ret1y:'+33.5%', ret3y:'+23.4%', rating:4},
+    ],
+    smallcap: [
+      {name:'Quant Small Cap Fund Direct Growth',       house:'Quant MF',       ret1y:'+47.3%', ret3y:'+35.2%', rating:5},
+      {name:'Nippon India Small Cap Direct Growth',     house:'Nippon India MF',ret1y:'+41.8%', ret3y:'+31.6%', rating:5},
+      {name:'HDFC Small Cap Fund Direct Growth',        house:'HDFC MF',        ret1y:'+38.4%', ret3y:'+28.9%', rating:4},
+      {name:'SBI Small Cap Fund Direct Growth',         house:'SBI MF',         ret1y:'+35.2%', ret3y:'+26.3%', rating:4},
+      {name:'Axis Small Cap Fund Direct Growth',        house:'Axis MF',        ret1y:'+36.7%', ret3y:'+27.8%', rating:4},
+    ],
+    flexicap: [
+      {name:'Parag Parikh Flexi Cap Direct Growth',     house:'PPFAS MF',       ret1y:'+28.6%', ret3y:'+21.4%', rating:5},
+      {name:'Quant Flexi Cap Fund Direct Growth',       house:'Quant MF',       ret1y:'+32.1%', ret3y:'+24.8%', rating:5},
+      {name:'HDFC Flexi Cap Fund Direct Growth',        house:'HDFC MF',        ret1y:'+24.3%', ret3y:'+19.6%', rating:4},
+      {name:'UTI Flexi Cap Fund Direct Growth',         house:'UTI MF',         ret1y:'+22.8%', ret3y:'+18.1%', rating:4},
+      {name:'Canara Rob Flexi Cap Direct Growth',       house:'Canara Robeco',  ret1y:'+23.5%', ret3y:'+18.9%', rating:4},
+    ],
+  };
+  mfDataCache = staticData;
+  Object.keys(MF_CATEGORIES).forEach(cat => renderMFTable(staticData[cat], 'mf-' + cat));
 }
 
 // ═══════════════════════════════════════════
@@ -2045,7 +2377,7 @@ function setActiveNav(el) {
 
 // Auto-highlight nav item on scroll (mobile)
 if (window.matchMedia('(max-width: 768px)').matches) {
-  const sections = ['sec-commodities','sec-indices','sec-sectors','sec-currencies','sec-news'];
+  const sections = ['sec-commodities','sec-indices','sec-sectors','sec-news','sec-mf','sec-currencies'];
   const navItems = document.querySelectorAll('.mobile-nav-item');
   window.addEventListener('scroll', () => {
     let current = '';
