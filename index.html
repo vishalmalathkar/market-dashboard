@@ -24,6 +24,15 @@
   <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
 
   <meta name="theme-color" content="#0a0c10" />
+
+  <!-- Performance: pre-connect to data sources so DNS resolves before JS fires -->
+  <link rel="preconnect" href="https://corsproxy.io" />
+  <link rel="preconnect" href="https://query1.finance.yahoo.com" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="dns-prefetch" href="https://api.allorigins.win" />
+  <link rel="dns-prefetch" href="https://nominatim.openstreetmap.org" />
+
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     :root {
@@ -621,7 +630,7 @@
     ═══════════════════════════════════════════ */
     @media (max-width: 1024px) {
       .commodities-grid { grid-template-columns: repeat(2, 1fr); }
-      .indices-grid     { grid-template-columns: repeat(3, 1fr); }
+      .indices-groups   { gap: 10px; }
       .currency-grid    { grid-template-columns: repeat(3, 1fr); }
       .news-grid        { grid-template-columns: 1fr 1fr; }
       .events-card      { grid-column: 1 / -1; }
@@ -654,8 +663,9 @@
       .commodity-price { font-size: 13px; }
       .commodity-change { font-size: 10px; }
 
-      /* ── INDICES: stack groups vertically on mobile ── */
-      .indices-groups { grid-template-columns: 1fr; gap: 10px; }
+      /* ── INDICES: both groups stack vertically, cards single column ── */
+      .indices-groups { grid-template-columns: 1fr; gap: 8px; }
+      .indices-grid   { grid-template-columns: 1fr; gap: 5px; }
       .index-card { padding: 8px 10px; border-radius: 8px; }
       .index-badge { font-size: 8px; padding: 1px 4px; }
       .index-name { font-size: 9px; }
@@ -1545,24 +1555,59 @@
 //  CONFIGURATION
 // ═══════════════════════════════════════════
 const REFRESH_INTERVAL = 60; // seconds
-// Multiple CORS proxies — fallback chain if one fails
-const CORS_PROXIES = [
-  'https://corsproxy.io/?',
-  'https://api.allorigins.win/raw?url=',
-];
-let activeProxyIdx = 0;
 
-async function fetchWithProxy(rawUrl) {
-  for (let i = 0; i < CORS_PROXIES.length; i++) {
-    const idx = (activeProxyIdx + i) % CORS_PROXIES.length;
+// ┌─────────────────────────────────────────────────────────────┐
+// │  YOUR CLOUDFLARE WORKER URL — paste it here                 │
+// │  e.g. 'https://market-pulse.johndoe.workers.dev'            │
+// └─────────────────────────────────────────────────────────────┘
+const WORKER_URL = 'https://YOUR-WORKER-NAME.YOUR-CF-USERNAME.workers.dev';
+
+// ── Data proxy via YOUR Worker (fast Cloudflare edge, no third-party proxies)
+async function fetchWithTimeout(url, ms = 8000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  try {
+    const resp = await fetch(url, { signal: controller.signal });
+    clearTimeout(timer);
+    return resp;
+  } catch(e) {
+    clearTimeout(timer);
+    throw e;
+  }
+}
+
+// All Yahoo Finance calls now go through YOUR Worker's /data route
+// Falls back to direct third-party proxies ONLY if Worker is not configured
+async function fetchWithProxy(rawUrl, timeoutMs = 8000) {
+  const workerReady = WORKER_URL && !WORKER_URL.includes('YOUR-WORKER-NAME');
+
+  if (workerReady) {
+    // Primary path: your own Cloudflare Worker — fast, reliable, cached
     try {
-      const resp = await fetch(CORS_PROXIES[idx] + encodeURIComponent(rawUrl));
-      if (resp.ok) { activeProxyIdx = idx; return resp; }
+      const workerDataUrl = `${WORKER_URL}/data?url=${encodeURIComponent(rawUrl)}`;
+      const resp = await fetchWithTimeout(workerDataUrl, timeoutMs);
+      if (resp.ok) return resp;
+    } catch(e) {
+      console.warn('Worker /data fetch failed, trying fallback:', e.message);
+    }
+  }
+
+  // Fallback: third-party CORS proxies (only used if Worker not set up)
+  const FALLBACK_PROXIES = [
+    'https://corsproxy.io/?',
+    'https://api.allorigins.win/raw?url=',
+  ];
+  for (const proxy of FALLBACK_PROXIES) {
+    try {
+      const resp = await fetchWithTimeout(proxy + encodeURIComponent(rawUrl), timeoutMs);
+      if (resp.ok) return resp;
     } catch(e) { /* try next */ }
   }
-  throw new Error('All proxies failed');
+
+  throw new Error('All data fetch methods failed');
 }
-const CORS_PROXY = 'https://corsproxy.io/?'; // legacy compat
+
+const CORS_PROXY = WORKER_URL + '/data?url='; // legacy compat
 
 // Yahoo Finance ticker symbols
 const TICKERS = {
@@ -1737,18 +1782,20 @@ function setCommodityChange(elId, change, pct) {
 
 // ═══════════════════════════════════════════
 //  FETCH FOREX (USD to INR)
+//  This runs first — all metal prices depend on it
+//  Tight 4s timeout so it never blocks the whole page
 // ═══════════════════════════════════════════
-let USD_INR = 84.5; // fallback
+let USD_INR = 84.5; // sensible fallback — updated live on load
 
 async function fetchUSDINR() {
   try {
     const url = `https://query1.finance.yahoo.com/v8/finance/chart/USDINR=X?interval=1d&range=1d`;
-    const resp = await fetchWithProxy(url);
+    const resp = await fetchWithProxy(url, 4000); // 4s hard timeout
     const data = await resp.json();
     const price = data?.chart?.result?.[0]?.meta?.regularMarketPrice;
-    if (price) USD_INR = price;
+    if (price && price > 70 && price < 110) USD_INR = price; // sanity range
   } catch (e) {
-    console.warn('Using fallback USD/INR rate:', USD_INR);
+    console.warn('USD/INR fetch failed — using fallback rate:', USD_INR);
   }
 }
 
@@ -2105,14 +2152,6 @@ async function fetchCurrencies() {
 //  AI MARKET NEWS — Cloudflare Worker + RSS Fallback
 // ═══════════════════════════════════════════
 
-// ┌─────────────────────────────────────────────────────────────────┐
-// │  STEP 1: Deploy the Cloudflare Worker (see README instructions) │
-// │  STEP 2: Paste your Worker URL below replacing the placeholder  │
-// └─────────────────────────────────────────────────────────────────┘
-const WORKER_URL = 'https://YOUR-WORKER-NAME.YOUR-CF-USERNAME.workers.dev';
-//  Example: 'https://market-news-proxy.johndoe.workers.dev'
-//  Leave as-is if not set up yet — RSS fallback will activate automatically.
-
 // RSS feeds (free, no key needed) — tried in order until one works
 const RSS_FEEDS = [
   { name: 'Economic Times Markets', url: 'https://economictimes.indiatimes.com/markets/rss.cms' },
@@ -2247,7 +2286,7 @@ Based on this live data and today's date, respond ONLY with this JSON (no other 
   ]
 }`;
 
-  const resp = await fetch(WORKER_URL, {
+  const resp = await fetch(WORKER_URL + '/ai', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -2488,10 +2527,11 @@ function showToast() {
 }
 
 // ═══════════════════════════════════════════
-//  MAIN REFRESH — optimised parallel loading
+//  MAIN REFRESH — maximum parallelism
+//  Each section renders independently the moment its data arrives
+//  Nothing waits for anything else (except metals need USD/INR first)
 // ═══════════════════════════════════════════
-// Currency refresh interval — 2 hours (rates don't change that fast)
-const CURRENCY_REFRESH_MS = 2 * 60 * 60 * 1000;
+const CURRENCY_REFRESH_MS = 2 * 60 * 60 * 1000; // 2 hours
 let currencyLastFetched = 0;
 let currencyDataCached = false;
 
@@ -2508,17 +2548,32 @@ async function fetchCurrenciesThrottled() {
 
 async function refreshAll() {
   const t0 = performance.now();
+
+  // ── Phase 1: USD/INR first (needed for metal conversions) — 4s timeout ──
   await fetchUSDINR();
-  await Promise.allSettled([
+
+  // ── Phase 2: Fire EVERYTHING else at the same time ──
+  // Each promise is independent — a slow/failed one never delays the others
+  // Sections paint to the screen the moment their own data arrives
+  const pricePromises = Promise.allSettled([
     fetchMetalPrices(),
     fetchAllIndices(),
     fetchSectors(),
-    fetchCurrenciesThrottled(),
     fetchNiftyMovers(),
   ]);
+
+  // Currency is throttled to 2hr — runs in parallel but doesn't hold up prices
+  const currencyPromise = fetchCurrenciesThrottled();
+
+  // AI sections are slowest — fire independently, never block anything
   fetchMarketNews();
   fetchMutualFunds();
-  fetchFuelPrices(); // geo-aware, runs independently
+  fetchFuelPrices();
+
+  // Wait for price data (the core of the page)
+  await pricePromises;
+  await currencyPromise;
+
   const elapsed = ((performance.now() - t0) / 1000).toFixed(1);
   document.getElementById('lastRefreshed').textContent =
     new Date().toLocaleTimeString('en-IN') + ` (${elapsed}s)`;
@@ -2613,7 +2668,7 @@ Respond ONLY with this exact JSON, no other text:
 Use real fund names. ret5y is 5-year CAGR. Rating is 1-5 stars.`;
 
   try {
-    const resp = await fetch(WORKER_URL, {
+    const resp = await fetch(WORKER_URL + '/ai', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
