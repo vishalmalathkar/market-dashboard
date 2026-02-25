@@ -4,9 +4,25 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>India Market Pulse | Live Gold, Silver, NIFTY, BSE Dashboard</title>
-  <meta name="description" content="Live Indian market dashboard — Gold, Silver, Copper prices, Petrol rate, NIFTY, BSE Sensex, sector performance. Auto-refreshes every minute." />
-  <meta property="og:title" content="India Market Pulse" />
-  <meta property="og:description" content="Live Gold, Silver, Nifty, BSE & Sector data. Free. Auto-refreshing." />
+  <meta name="description" content="Live Indian market dashboard — Gold, Silver, Copper prices, Petrol, Diesel rates, NIFTY 50, BSE Sensex, Bank Nifty, sector performance & mutual funds. Auto-refreshes every minute." />
+
+  <!-- Canonical & Open Graph -->
+  <link rel="canonical" href="https://indiamarketpulse.com" />
+  <meta property="og:title" content="India Market Pulse — Live NSE, BSE & Commodity Dashboard" />
+  <meta property="og:description" content="Live Gold, Silver, Nifty 50, BSE Sensex, Bank Nifty, Sector data & Top Mutual Funds. Free. Auto-refreshing every 60 seconds." />
+  <meta property="og:url" content="https://indiamarketpulse.com" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://indiamarketpulse.com/og-preview.png" />
+
+  <!-- Twitter card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="India Market Pulse" />
+  <meta name="twitter:description" content="Live Indian market dashboard — Nifty, Sensex, Gold, Sectors, Mutual Funds." />
+
+  <!-- Security headers (belt-and-suspenders via meta — real headers need server config) -->
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+
   <meta name="theme-color" content="#0a0c10" />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
   <style>
@@ -226,11 +242,19 @@
     .commodity-change.down   { color: var(--red); }
     .commodity-change.neutral{ color: var(--muted); }
 
-    /* INDICES — slim 3-col rows */
+    /* INDICES — slim 3-col rows, two groups side by side */
+    .indices-groups {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .indices-group { display: flex; flex-direction: column; gap: 5px; }
+
     .indices-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
+      grid-template-columns: 1fr;
+      gap: 6px;
     }
 
     .index-card {
@@ -630,8 +654,8 @@
       .commodity-price { font-size: 13px; }
       .commodity-change { font-size: 10px; }
 
-      /* ── INDICES: 2 cols ── */
-      .indices-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+      /* ── INDICES: stack groups vertically on mobile ── */
+      .indices-groups { grid-template-columns: 1fr; gap: 10px; }
       .index-card { padding: 8px 10px; border-radius: 8px; }
       .index-badge { font-size: 8px; padding: 1px 4px; }
       .index-name { font-size: 9px; }
@@ -1200,18 +1224,18 @@
       <div class="commodity-card petrol">
         <div class="commodity-icon">⛽</div>
         <div class="commodity-body">
-          <div class="commodity-top"><span class="commodity-label">Fuel · Hyd</span></div>
-          <div style="display:flex;gap:10px;align-items:baseline;flex-wrap:wrap">
+          <div class="commodity-top"><span class="commodity-label" id="fuelCityLabel">Fuel · Hyd</span></div>
+          <div style="display:flex;gap:12px;align-items:baseline;flex-wrap:wrap">
             <div>
               <div style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:1px">Petrol</div>
-              <div class="commodity-price" id="petrolPrice">₹108.20</div>
+              <div class="commodity-price" id="petrolPrice">₹107.50</div>
             </div>
             <div>
               <div style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:1px">Diesel</div>
-              <div class="commodity-price" id="dieselPrice">₹94.62</div>
+              <div class="commodity-price" id="dieselPrice">₹95.69</div>
             </div>
           </div>
-          <div class="commodity-change neutral" id="petrolChange">Stable · /litre</div>
+          <div class="commodity-change neutral" id="petrolChange">per litre · updates 6AM daily</div>
         </div>
       </div>
     </div>
@@ -1226,97 +1250,105 @@
       <div class="section-line"></div>
     </div>
 
-    <!-- GROUP 1: Main Indices -->
-    <div class="index-group-label">Core Indices</div>
-    <div class="indices-grid">
-      <div class="index-card nifty50">
-        <div class="index-left">
-          <div class="index-badge">Nifty 50</div>
-          <div class="index-name">NSE Nifty 50</div>
-        </div>
-        <div class="index-right">
-          <div class="index-value loading" id="nifty50Val">—</div>
-          <div class="index-change-row">
-            <div class="change-chip neutral" id="nifty50Change">—</div>
-            <div class="change-chip neutral" id="nifty50Pct">—</div>
+    <div class="indices-groups">
+
+      <!-- GROUP 1: Core Indices -->
+      <div class="indices-group">
+        <div class="index-group-label">Core Indices</div>
+        <div class="indices-grid">
+          <div class="index-card nifty50">
+            <div class="index-left">
+              <div class="index-badge">Nifty 50</div>
+              <div class="index-name">NSE Nifty 50</div>
+            </div>
+            <div class="index-right">
+              <div class="index-value loading" id="nifty50Val">—</div>
+              <div class="index-change-row">
+                <div class="change-chip neutral" id="nifty50Change">—</div>
+                <div class="change-chip neutral" id="nifty50Pct">—</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="index-card banknifty">
+            <div class="index-left">
+              <div class="index-badge">Bank Nifty</div>
+              <div class="index-name">Nifty Bank</div>
+            </div>
+            <div class="index-right">
+              <div class="index-value loading" id="bankniftyVal">—</div>
+              <div class="index-change-row">
+                <div class="change-chip neutral" id="bankniftyChange">—</div>
+                <div class="change-chip neutral" id="bankniftyPct">—</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="index-card bse">
+            <div class="index-left">
+              <div class="index-badge">BSE Sensex</div>
+              <div class="index-name">Bombay SE</div>
+            </div>
+            <div class="index-right">
+              <div class="index-value loading" id="bseVal">—</div>
+              <div class="index-change-row">
+                <div class="change-chip neutral" id="bseChange">—</div>
+                <div class="change-chip neutral" id="bsePct">—</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="index-card banknifty">
-        <div class="index-left">
-          <div class="index-badge">Bank Nifty</div>
-          <div class="index-name">Nifty Bank</div>
-        </div>
-        <div class="index-right">
-          <div class="index-value loading" id="bankniftyVal">—</div>
-          <div class="index-change-row">
-            <div class="change-chip neutral" id="bankniftyChange">—</div>
-            <div class="change-chip neutral" id="bankniftyPct">—</div>
+      <!-- GROUP 2: Broader Market -->
+      <div class="indices-group">
+        <div class="index-group-label">Broader Market</div>
+        <div class="indices-grid">
+          <div class="index-card smallcap">
+            <div class="index-left">
+              <div class="index-badge">Smallcap 100</div>
+              <div class="index-name">Nifty Smallcap</div>
+            </div>
+            <div class="index-right">
+              <div class="index-value loading" id="smallcapVal">—</div>
+              <div class="index-change-row">
+                <div class="change-chip neutral" id="smallcapChange">—</div>
+                <div class="change-chip neutral" id="smallcapPct">—</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="index-card midcap">
+            <div class="index-left">
+              <div class="index-badge">Midcap 100</div>
+              <div class="index-name">Nifty Midcap</div>
+            </div>
+            <div class="index-right">
+              <div class="index-value loading" id="midcapVal">—</div>
+              <div class="index-change-row">
+                <div class="change-chip neutral" id="midcapChange">—</div>
+                <div class="change-chip neutral" id="midcapPct">—</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="index-card gift">
+            <div class="index-left">
+              <div class="index-badge">GIFT Nifty</div>
+              <div class="index-name">GIFT City SGX</div>
+            </div>
+            <div class="index-right">
+              <div class="index-value loading" id="giftNiftyVal">—</div>
+              <div class="index-change-row">
+                <div class="change-chip neutral" id="giftNiftyChange">—</div>
+                <div class="change-chip neutral" id="giftNiftyPct">—</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="index-card bse">
-        <div class="index-left">
-          <div class="index-badge">BSE Sensex</div>
-          <div class="index-name">Bombay SE</div>
-        </div>
-        <div class="index-right">
-          <div class="index-value loading" id="bseVal">—</div>
-          <div class="index-change-row">
-            <div class="change-chip neutral" id="bseChange">—</div>
-            <div class="change-chip neutral" id="bsePct">—</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- GROUP 2: Broader Market -->
-    <div class="index-group-label" style="margin-top:10px">Broader Market</div>
-    <div class="indices-grid">
-      <div class="index-card smallcap">
-        <div class="index-left">
-          <div class="index-badge">Smallcap 100</div>
-          <div class="index-name">Nifty Smallcap</div>
-        </div>
-        <div class="index-right">
-          <div class="index-value loading" id="smallcapVal">—</div>
-          <div class="index-change-row">
-            <div class="change-chip neutral" id="smallcapChange">—</div>
-            <div class="change-chip neutral" id="smallcapPct">—</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="index-card midcap">
-        <div class="index-left">
-          <div class="index-badge">Midcap 100</div>
-          <div class="index-name">Nifty Midcap</div>
-        </div>
-        <div class="index-right">
-          <div class="index-value loading" id="midcapVal">—</div>
-          <div class="index-change-row">
-            <div class="change-chip neutral" id="midcapChange">—</div>
-            <div class="change-chip neutral" id="midcapPct">—</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="index-card gift">
-        <div class="index-left">
-          <div class="index-badge">GIFT Nifty</div>
-          <div class="index-name">GIFT City SGX</div>
-        </div>
-        <div class="index-right">
-          <div class="index-value loading" id="giftNiftyVal">—</div>
-          <div class="index-change-row">
-            <div class="change-chip neutral" id="giftNiftyChange">—</div>
-            <div class="change-chip neutral" id="giftNiftyPct">—</div>
-          </div>
-        </div>
-      </div>
-    </div>
+    </div><!-- end indices-groups -->
 
     <div class="data-source-note">
       ℹ️ Index data: Yahoo Finance (~15-min delayed). Real-time requires broker API.
@@ -1557,8 +1589,95 @@ const SECTOR_TICKERS = {
   'Nifty Fin Serv':  '^NIFTY_FIN_SERVICE',
 };
 
-// Petrol prices (Hyderabad - updated manually monthly)
-const PETROL_PRICE = 108.20;
+// ═══════════════════════════════════════════
+//  FUEL PRICES — Geo-aware city lookup
+//  Prices updated as of Feb 2026 (update quarterly)
+//  Source: mypetrolprice.com / goodreturns.in
+// ═══════════════════════════════════════════
+const FUEL_PRICES = {
+  // [petrol, diesel]  per litre in INR
+  'hyderabad':   [107.50, 95.69],
+  'secunderabad':[107.50, 95.69],
+  'warangal':    [107.44, 95.64],
+  'vijayawada':  [108.20, 94.52],
+  'visakhapatnam':[108.38,94.68],
+  'mumbai':      [103.49, 90.01],
+  'pune':        [104.91, 91.40],
+  'nagpur':      [103.96, 90.45],
+  'delhi':       [94.81,  87.71],
+  'noida':       [94.83,  87.96],
+  'gurgaon':     [94.83,  87.89],
+  'bangalore':   [102.84, 88.94],
+  'bengaluru':   [102.84, 88.94],
+  'mysore':      [102.76, 88.87],
+  'chennai':     [100.80, 92.37],
+  'coimbatore':  [100.76, 92.33],
+  'kolkata':     [104.99, 91.81],
+  'ahmedabad':   [95.35,  89.32],
+  'surat':       [95.28,  89.26],
+  'jaipur':      [104.88, 90.10],
+  'lucknow':     [94.82,  87.97],
+  'kanpur':      [94.79,  87.94],
+  'bhopal':      [107.23, 92.65],
+  'indore':      [107.18, 92.60],
+  'patna':       [107.24, 94.33],
+  'chandigarh':  [94.83,  82.74],
+  'kochi':       [107.51, 96.77],
+  'thiruvananthapuram':[107.63,96.89],
+  'guwahati':    [94.37,  81.63],
+  'bhubaneswar': [101.03, 93.54],
+};
+
+const FUEL_DEFAULT = [107.50, 95.69]; // Hyderabad default
+const FUEL_DEFAULT_CITY = 'Hyderabad';
+
+function setFuelPrices(petrol, diesel, city) {
+  document.getElementById('petrolPrice').textContent = `₹${petrol.toFixed(2)}`;
+  document.getElementById('dieselPrice').textContent = `₹${diesel.toFixed(2)}`;
+  document.getElementById('fuelCityLabel').textContent = `Fuel · ${city}`;
+}
+
+async function fetchFuelPrices() {
+  // Try geolocation first
+  if (!navigator.geolocation) {
+    setFuelPrices(...FUEL_DEFAULT, FUEL_DEFAULT_CITY);
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    async (pos) => {
+      try {
+        // Reverse geocode using free OpenStreetMap Nominatim API
+        const { latitude, longitude } = pos.coords;
+        const url = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&zoom=10`;
+        const resp = await fetch(url, { headers: { 'Accept-Language': 'en' } });
+        const data = await resp.json();
+        const addr = data.address || {};
+        // Try city → town → county → state_district in order
+        const rawCity = (addr.city || addr.town || addr.county || addr.state_district || '').toLowerCase().trim();
+        // Match against our table
+        const match = Object.keys(FUEL_PRICES).find(k => rawCity.includes(k) || k.includes(rawCity.split(' ')[0]));
+        if (match) {
+          const [p, d] = FUEL_PRICES[match];
+          const displayCity = rawCity.split(' ').map(w => w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
+          setFuelPrices(p, d, displayCity);
+        } else {
+          // City not in table — show detected city name with default prices
+          const displayCity = rawCity ? rawCity.charAt(0).toUpperCase()+rawCity.slice(1) : FUEL_DEFAULT_CITY;
+          setFuelPrices(...FUEL_DEFAULT, displayCity + '*');
+          document.getElementById('petrolChange').textContent = 'per litre · *prices approx for your region';
+        }
+      } catch(e) {
+        setFuelPrices(...FUEL_DEFAULT, FUEL_DEFAULT_CITY);
+      }
+    },
+    () => {
+      // Permission denied or error — use default
+      setFuelPrices(...FUEL_DEFAULT, FUEL_DEFAULT_CITY);
+    },
+    { timeout: 5000, maximumAge: 3600000 } // cache location for 1 hour
+  );
+}
 
 // ═══════════════════════════════════════════
 //  CLOCK
@@ -1768,15 +1887,15 @@ async function fetchGIFTNifty() {
   }
 }
 
-// Fetch Midcap 100 with multiple ticker fallbacks
+// Fetch Midcap 100 — confirmed working ticker: NIFTY_MIDCAP_100.NS
+// Note: ^NIFTY_MIDCAP_100 (with caret) does NOT work; the .NS suffix version does
 async function fetchMidcap() {
-  // Yahoo Finance has inconsistent naming for this index — try all known variants
-  const tickers = ['^NIFTY_MIDCAP_100', '^CNXMC', 'NIFTYMIDCAP100.NS', '^NIFMID50'];
+  // Try in order — first one that returns data wins
+  const tickers = ['NIFTY_MIDCAP_100.NS', '^CRSMID', 'MOM100.NS'];
   for (const t of tickers) {
     const r = await fetchIndex(t, 'midcapVal', 'midcapChange', 'midcapPct');
     if (r) return r;
   }
-  // Last resort: estimate from Nifty50 as a rough proxy note
   const el = document.getElementById('midcapVal');
   if (el) { el.textContent = 'N/A'; el.classList.remove('loading'); }
 }
@@ -2371,20 +2490,35 @@ function showToast() {
 // ═══════════════════════════════════════════
 //  MAIN REFRESH — optimised parallel loading
 // ═══════════════════════════════════════════
+// Currency refresh interval — 2 hours (rates don't change that fast)
+const CURRENCY_REFRESH_MS = 2 * 60 * 60 * 1000;
+let currencyLastFetched = 0;
+let currencyDataCached = false;
+
+async function fetchCurrenciesThrottled() {
+  const now = Date.now();
+  if (currencyDataCached && now - currencyLastFetched < CURRENCY_REFRESH_MS) {
+    console.log('💱 Currency: using 2hr cache');
+    return;
+  }
+  await fetchCurrencies();
+  currencyLastFetched = Date.now();
+  currencyDataCached = true;
+}
+
 async function refreshAll() {
-  // Fire all data fetches in parallel — don't wait for each one
   const t0 = performance.now();
-  await fetchUSDINR(); // need this first for metal/currency conversions
+  await fetchUSDINR();
   await Promise.allSettled([
     fetchMetalPrices(),
     fetchAllIndices(),
     fetchSectors(),
-    fetchCurrencies(),
+    fetchCurrenciesThrottled(),
     fetchNiftyMovers(),
   ]);
-  // AI sections are slow — run them independently so they don't block the UI
   fetchMarketNews();
   fetchMutualFunds();
+  fetchFuelPrices(); // geo-aware, runs independently
   const elapsed = ((performance.now() - t0) / 1000).toFixed(1);
   document.getElementById('lastRefreshed').textContent =
     new Date().toLocaleTimeString('en-IN') + ` (${elapsed}s)`;
@@ -2423,7 +2557,6 @@ function renderMFTable(funds, containerId) {
     <table class="mf-table">
       <thead>
         <tr>
-          <th>#</th>
           <th>Fund</th>
           <th>1Y</th>
           <th>3Y</th>
@@ -2434,7 +2567,6 @@ function renderMFTable(funds, containerId) {
       <tbody>
         ${funds.map((f, i) => `
           <tr>
-            <td><span class="mf-rank">${i+1}</span></td>
             <td>
               <div class="mf-fund-name">${f.name}</div>
               <div class="mf-fund-house">${f.house}</div>
